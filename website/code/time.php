@@ -801,49 +801,49 @@ if(isset($_POST['submit']))
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">09:00 am</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">10:00 am</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">11:00 am</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">12:00 pm</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">01:00 pm</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">02:00 pm</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                     <div class="available_tee-time_boxes p-4 rounded shadow mb-4">
-                        <h3 class="p-1">08:00 am</h3>
+                        <h3 class="p-1">03:00 pm</h3>
                         <p class="p-1 text-muted">9 holes <br> 18 holes</p>
                         <a href="#tee-form_section" class="btn_book_tee btn">BOOK A TEE TIME</a>
                     </div>

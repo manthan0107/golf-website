@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Walkwell - Login & Sign Up</title>
+    <title>Golf Club - Login & Sign Up</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- Bootstrap 5 -->
@@ -104,18 +104,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <style>
         :root {
-            --bg-color: #f4f4f4;
-            --card-bg: #1e2124;
-            --text-color: #ffffff;
-            --accent-gold: #D4AF37;
-            --accent-cream: #F5E6CA;
-            --input-bg: #2b2e33;
-            --transition-speed: 0.4s;
+            --primary-green: #2e7d32;
+            --bg-gradient: linear-gradient(135deg, #a8cf45, #4caf50);
+            --error-bg: #f8d7da;
+            --error-text: #721c24;
+            --input-border: #ced4da;
+            --transition-speed: 0.3s;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-color);
+            background: var(--bg-gradient);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -127,36 +126,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         /* --- Toggle Switch Container --- */
         .toggle-container {
             position: relative;
-            width: 280px;
-            height: 50px;
-            background-color: #ddd;
+            width: 240px;
+            height: 45px;
+            background-color: rgba(255, 255, 255, 0.3);
             border-radius: 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             cursor: pointer;
             user-select: none;
+            backdrop-filter: blur(5px);
         }
 
         .toggle-btn {
             position: absolute;
-            top: 5px;
+            top: 4px;
             left: 5px;
-            width: 135px;
-            height: 40px;
+            width: 115px;
+            height: 37px;
             background-color: #1e2124;
             border-radius: 25px;
             transition: transform var(--transition-speed) ease-in-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 1;
         }
 
-        /* Classes to move the button */
         .toggle-container.active-login .toggle-btn {
-            transform: translateX(135px);
+            transform: translateX(115px);
         }
 
         .toggle-labels {
@@ -171,113 +168,121 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             width: 50%;
             text-align: center;
             font-weight: 600;
-            font-size: 1rem;
-            color: #555;
+            font-size: 0.9rem;
+            color: #fff;
             transition: color var(--transition-speed);
-            line-height: 40px; /* Vertically center text */
+            line-height: 37px;
         }
         
         .active-text {
-            color: var(--accent-gold) !important;
+            color: #FFD700 !important; /* Gold for active toggle text */
         }
-
 
         /* --- Main Card --- */
         .auth-card {
-            background-color: var(--card-bg);
-            color: var(--text-color);
+            background-color: #ffffff;
             width: 90%;
-            max-width: 420px;
-            border-radius: 20px;
+            max-width: 400px;
+            border-radius: 15px;
             padding: 40px 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
             position: relative;
-            overflow: hidden;
-            min-height: 520px; /* Ensure enough height for transitions */
+            min-height: 450px;
             display: flex;
-            align-items: flex-start; /* Align top so forms don't jump weirdly */
+            flex-direction: column;
         }
 
-        /* --- Forms Slider --- */
-        .forms-slider {
-            display: flex;
-            width: 200%; /* Holds two forms side by side */
-            transition: transform var(--transition-speed) ease-in-out;
+        .card-header-icon {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            margin-bottom: 10px;
         }
 
+        h2 {
+            color: var(--primary-green);
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        /* --- Forms Toggle Logic --- */
         .form-section {
-            width: 50%;
-            padding: 0 10px;
-            opacity: 0;
-            transition: opacity 0.2s ease-in-out;
-            pointer-events: none; /* Prevent interaction when hidden */
+            display: none;
         }
         
-        /* Visible state managed by class */
         .form-section.active {
-            opacity: 1;
-            pointer-events: auto;
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
-        /* Slide positions */
-        .active-login .forms-slider {
-            transform: translateX(-50%);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         /* --- Form Elements --- */
-        h3 {
-            color: var(--accent-cream);
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 30px;
+        .form-label {
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 5px;
         }
 
-        .input-group-text {
-            background-color: var(--input-bg);
-            border: 1px solid #444;
-            border-right: none;
-            color: var(--accent-gold);
-        }
-        
         .form-control {
-            background-color: var(--input-bg);
-            border: 1px solid #444;
-            border-left: none;
-            color: #fff;
+            border: 1px solid var(--input-border);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
         
         .form-control:focus {
-            background-color: #333;
-            color: #fff;
-            border-color: var(--accent-gold);
-            box-shadow: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
         }
 
-        .form-control::placeholder {
-            color: #888;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, var(--accent-gold), #b38f2d);
+        .btn-green {
+            background-color: var(--primary-green);
             border: none;
             color: #fff;
             font-weight: 600;
             padding: 12px;
             border-radius: 8px;
             width: 100%;
-            margin-top: 10px;
-            transition: opacity 0.3s;
+            margin-top: 15px;
+            transition: background 0.3s;
         }
 
-        .btn-gold:hover {
-            opacity: 0.9;
+        .btn-green:hover {
+            background-color: #1b5e20;
+            color: #fff;
         }
 
-        .alert-custom {
+        .alert-pink {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
             font-size: 0.9rem;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
         }
 
     </style>
@@ -294,115 +299,114 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="auth-card">
+        <div class="card-header-icon">
+            <i class="fas fa-lightbulb"></i>
+        </div>
         
-        <div class="forms-slider">
-            
-            <!-- SIGN UP FORM (Left) -->
-            <div class="form-section" id="formSignUp">
-                <h3>Create Account</h3>
+        <div id="loginHeader">
+            <h2>Golf Club Login</h2>
+        </div>
+        <div id="signupHeader" style="display: none;">
+            <h2>Create Account</h2>
+        </div>
+
+        <!-- Messages -->
+        <?php if ($error): ?>
+            <div class="alert-pink"><?= $error ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div class="alert alert-success text-center" style="font-size: 0.9rem; border-radius: 8px;"><?= $success ?></div>
+        <?php endif; ?>
+
+        <!-- LOGIN FORM -->
+        <div class="form-section" id="formLogin">
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="login">
                 
-                <?php if ($success): ?>
-                    <div class="alert alert-success alert-custom text-center"><?= $success ?></div>
-                <?php endif; ?>
-                <?php if ($error && isset($_POST['action']) && $_POST['action'] == 'signup'): ?>
-                    <div class="alert alert-danger alert-custom text-center"><?= $error ?></div>
-                <?php endif; ?>
+                <div class="mb-3">
+                    <input type="email" class="form-control" name="email" placeholder="Email address" required>
+                </div>
 
-                <form method="POST" action="">
-                    <input type="hidden" name="action" value="signup">
-                    
-                    <div class="mb-3 input-group">
-                        <span class="input-group-text"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" name="username" placeholder="Full Name" required>
-                    </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                </div>
 
-                    <div class="mb-3 input-group">
-                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
-                        <input type="email" class="form-control" name="email" placeholder="Email Address" required>
-                    </div>
-
-                    <div class="mb-4 input-group">
-                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                        <input type="password" class="form-control" name="password" placeholder="Password" required>
-                    </div>
-
-                    <button type="submit" class="btn btn-gold">SIGN UP</button>
-                </form>
-            </div>
-
-            <!-- LOGIN FORM (Right) -->
-            <div class="form-section" id="formLogin">
-                <h3>Welcome Back</h3>
-
-                <?php if ($error && isset($_POST['action']) && $_POST['action'] == 'login'): ?>
-                    <div class="alert alert-danger alert-custom text-center"><?= $error ?></div>
-                <?php endif; ?>
-                <!-- Success message from signup can also be shown here if needed, but handled above -->
+                <button type="submit" class="btn btn-green">Login</button>
                 
-                <form method="POST" action="">
-                    <input type="hidden" name="action" value="login">
-                    
-                    <div class="mb-3 input-group">
-                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
-                        <input type="email" class="form-control" name="email" placeholder="Email Address" required>
-                    </div>
+                <div class="auth-footer">
+                    <a href="#">Forgot Password?</a><br>
+                    Don't have an account? <a href="javascript:void(0)" onclick="toggleAuth(false)">Sign Up</a>
+                </div>
+            </form>
+        </div>
 
-                    <div class="mb-4 input-group">
-                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                        <input type="password" class="form-control" name="password" placeholder="Password" required>
-                    </div>
+        <!-- SIGN UP FORM -->
+        <div class="form-section" id="formSignUp">
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="signup">
+                
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="username" placeholder="Full Name" required>
+                </div>
 
-                    <div class="d-flex justify-content-between mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="rememberMe">
-                            <label class="form-check-label text-white-50" style="font-size:0.9rem" for="rememberMe">Remember me</label>
-                        </div>
-                        <a href="#" class="text-white-50" style="font-size:0.9rem; text-decoration:none;">Forgot?</a>
-                    </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" name="email" placeholder="Email address" required>
+                </div>
 
-                    <button type="submit" class="btn btn-gold">LOG IN</button>
-                </form>
-            </div>
-        
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="btn btn-green">Sign Up</button>
+                
+                <div class="auth-footer">
+                    Already have an account? <a href="javascript:void(0)" onclick="toggleAuth(true)">Login</a>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         const container = document.getElementById('toggleContainer');
-        const card = document.querySelector('.auth-card');
         const labelSignUp = document.getElementById('labelSignUp');
         const labelSignIn = document.getElementById('labelSignIn');
         const formSignUp = document.getElementById('formSignUp');
         const formLogin = document.getElementById('formLogin');
+        const loginHeader = document.getElementById('loginHeader');
+        const signupHeader = document.getElementById('signupHeader');
 
-        let isLogin = false; // Default is Sign Up (Left)
+        let isLogin = true; // Default is Login for the green theme
 
         function updateUI() {
             if (isLogin) {
-                // Switch to Login (Right)
                 container.classList.add('active-login');
-                card.classList.add('active-login');
-                
                 labelSignIn.classList.add('active-text');
                 labelSignUp.classList.remove('active-text');
 
                 formLogin.classList.add('active');
                 formSignUp.classList.remove('active');
-            } else {
-                // Switch to Sign Up (Left)
-                container.classList.remove('active-login');
-                card.classList.remove('active-login');
                 
+                loginHeader.style.display = 'block';
+                signupHeader.style.display = 'none';
+            } else {
+                container.classList.remove('active-login');
                 labelSignUp.classList.add('active-text');
                 labelSignIn.classList.remove('active-text');
 
                 formSignUp.classList.add('active');
                 formLogin.classList.remove('active');
+                
+                loginHeader.style.display = 'none';
+                signupHeader.style.display = 'block';
             }
         }
 
-        function toggleAuth() {
-            isLogin = !isLogin;
+        function toggleAuth(forceLogin) {
+            if (typeof forceLogin !== 'undefined') {
+                isLogin = forceLogin;
+            } else {
+                isLogin = !isLogin;
+            }
             updateUI();
         }
 
@@ -417,23 +421,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Initialize based on hash or default
+        // Initialize
         if (window.location.hash) {
             checkHash();
         } else {
-             // Default is Sign Up as per user request "Left side -> Show SIGN UP form"
-             // But usually users expect Login. Let's see. 
-             // "Left side -> Show SIGN UP form". "If toggle LEFT -> Sign Up form".
-             // The code initializes isLogin=false (Signup).
-             updateUI();
+            updateUI();
         }
 
         window.addEventListener('hashchange', checkHash);
 
-        // Check if we need to auto-switch based on PHP state
-        <?php if ($success || (isset($_POST['action']) && $_POST['action'] == 'login')): ?>
-            // If success (signup done) OR we tried to login (and failed), show Login tab
+        // PHP logic to auto-switch
+        <?php if ($success || (isset($_POST['action']) && $_POST['action'] == 'login' && $error)): ?>
             isLogin = true;
+            updateUI();
+        <?php elseif (isset($_POST['action']) && $_POST['action'] == 'signup' && $error): ?>
+            isLogin = false;
             updateUI();
         <?php endif; ?>
         

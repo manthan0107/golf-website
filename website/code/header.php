@@ -1,26 +1,65 @@
 <header class="header-style2">
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container">
-      <a class="navbar-brand" href="index.php">
-        <img id="logo" src="../image/logo.png" width="200px" alt="logo">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom p-0">
+    <div class="container-fluid px-1">
+      <!-- Logo (Left) -->
+      <a class="navbar-brand py-0 me-2" href="index.php">
+        <img id="logo" src="../image/logo.png" style="max-width: 110px; height: auto;" alt="logo">
       </a>
-      <button class="navbar-toggler  ms-lg-auto ms-auto me-0" type="button" data-bs-toggle="collapse"
+
+      <!-- Right-side icons (Profile, Search, Membership) - Mobile & Desktop -->
+      <!-- Order: Brand, Icons, Toggler (Mobile) || Brand, Menu, Icons (Desktop) -->
+      <div class="attr-nav order-lg-last ms-auto d-flex align-items-center">
+        
+        <!-- Search Icon (Visible on all screens) -->
+        <a href="#!" class="nav-link p-2"><i class="fas fa-search"></i></a>
+        
+        <!-- Membership Button (Visible on Large Screens Only) -->
+        <a href="membership.php" class="btn btn-primary btn-sm ms-1 d-none d-lg-inline-block">
+          <i class="fa fa-gem"></i> <span>Membership</span>
+        </a>
+
+        <?php if (isset($_SESSION['user_id']) || isset($_SESSION['username'])): ?>
+            <!-- Logged In: Profile Dropdown -->
+            <div class="dropdown ms-1">
+              <a href="#" class="btn btn-outline-dark btn-sm dropdown-toggle d-flex align-items-center" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius:20px; font-weight:600;">
+                 <i class="fa fa-user me-1"></i> <span>Profile</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="logout.php"><i class="fa fa-sign-out me-1"></i> Logout</a></li>
+              </ul>
+            </div>
+        <?php else: ?>
+            <!-- Guest: Show Login & Sign Up (Visible on all screens, collapse to icons on mobile if needed, but buttons fit okay usually) -->
+             <a href="login.php#login" class="btn btn-outline-dark btn-sm ms-2" style="border-radius:20px; font-weight:600;">
+                Log In
+             </a>
+             <a href="login.php#signup" class="btn btn-dark btn-sm ms-2" style="border-radius:20px; font-weight:600;">
+                Sign Up
+             </a>
+        <?php endif; ?>
+      </div>
+
+      <!-- Toggler (Mobile) -->
+      <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse"
         data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-5 ps-5">
+      <!-- Menu Items (Center) -->
+      <div class="collapse navbar-collapse order-lg-2" id="mainNav">
+        <ul class="navbar-nav mx-auto">
           <!-- Home -->
           <li class="nav-item"><a class="nav-link" href="index.php">HOME</a></li>
 
           <!-- Pages dropdown -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               PAGES
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu" aria-labelledby="pagesDropdown">
               <li><a class="dropdown-item" href="about.php">About</a></li>
               <li><a class="dropdown-item" href="team.php">TEAM</a></li>
               <li><a class="dropdown-item" href="time.php">Tee-Time</a></li>
@@ -33,49 +72,25 @@
 
           <!-- Course dropdown -->
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            <a class="nav-link dropdown-toggle" href="#" id="courseDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               COURSE
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu" aria-labelledby="courseDropdown">
               <li><a class="dropdown-item" href="coaching.php">Golf Coaching</a></li>
               <li><a class="dropdown-item" href="tounament.php">Host Tounament</a></li>
             </ul>
           </li>
 
-          <!-- service-menu -->
+          <!-- Other Links -->
           <li class="nav-item"><a class="nav-link" href="service.php">SERVICE</a></li>
-
           <li class="nav-item"><a class="nav-link" href="blog.php">BLOG</a></li>
           <li class="nav-item"><a class="nav-link" href="contact.php">CONTACT</a></li>
         </ul>
       </div>
 
-      <!-- Right-side icons -->
-      <div class="attr-nav ms-lg-3 d-flex align-items-center justify-content-end ">
-        <a href="#!" class="nav-link p-2 d-none d-xl-inline-block"><i class="fas fa-search"></i></a>
-        <!-- Membership button (keep it?) User didn't say remove. But maybe Profile replaces it? I'll keep it. -->
-        <a href="membership.php" class="btn btn-primary ms-2 d-none d-xl-inline-block">Membership</a>
-
-        <?php if (isset($_SESSION['user_id']) || isset($_SESSION['username'])): ?>
-            <!-- Logged In: Show Profile & Logout -->
-             <a href="profile.php" class="btn btn-outline-dark ms-2" style="border-radius:20px; font-weight:600;">
-                <i class="fa fa-user me-1"></i> Profile
-             </a>
-             <a href="logout.php" class="btn btn-danger ms-2" style="border-radius:20px; font-weight:600;">
-                <i class="fa fa-sign-out me-1"></i> Logout
-             </a>
-        <?php else: ?>
-            <!-- Guest: Show Login & Sign Up -->
-             <a href="login.php#login" class="btn btn-outline-dark ms-2" style="border-radius:20px; font-weight:600;" onclick="window.location.href='login.php#login'; location.reload();">
-                Log In
-             </a>
-             <a href="login.php#signup" class="btn btn-dark ms-2" style="border-radius:20px; font-weight:600;" onclick="window.location.href='login.php#signup'; location.reload();">
-                Sign Up
-             </a>
-        <?php endif; ?>
-      </div>
-
     </div>
   </nav>
 </header>
+
+
