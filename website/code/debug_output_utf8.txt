@@ -1,0 +1,76 @@
+﻿Connected successfully to database: golfweb
+--- TABLES ---
+coaching
+contact
+membership
+plan
+register
+signup
+team
+tee_time
+tounament
+
+--- REGISTER TABLE STRUCTURE ---
+id - int(20)
+username - varchar(25)
+email - varchar(25)
+password - varchar(255)
+
+--- REGISTER TABLE DATA (Last 5 users) ---
+Array
+(
+    [id] => 14
+    [username] => manthan munjani
+    [email] => munjanimanthan02@gmail.co
+    [password] => $2y$10$wh0.JyvFKfSyU71PxTE/CuyliAb2uMgIl..ZirJG/HGEB3IoPMrZO
+)
+Array
+(
+    [id] => 13
+    [username] => manthan munjani
+    [email] => munjanimanthan02@gmail.co
+    [password] => $2y$10$oV0mtwY4v2B1Un2TBWA.de4gUFR0mB4be5ozHoT6bjnNQD4TNShfW
+)
+Array
+(
+    [id] => 12
+    [username] => manthan munjani
+    [email] => munjanimanthan02@gmail.co
+    [password] => $2y$10$VAQtWRuyV.H7Lq0SqZ9NEOeHRuHLNWtdvQBV6fEqhE35O9SWVza.K
+)
+Array
+(
+    [id] => 11
+    [username] => manthan munjani
+    [email] => munjanimanthan02@gmail.co
+    [password] => $2y$10$JHTTdXtUCplC52OaSf6JqudzLsRLR5loY8jMyPOTL42miXaZRG7sm
+)
+Array
+(
+    [id] => 10
+    [username] => manthan munjani
+    [email] => munjanimanthan02@gmail.co
+    [password] => $2y$10$BYAKWMCl9VSpnMkDZnj9dObAXDnN8TY.bRN6ZI9xJWMoAl5Eq8hTu
+)
+
+--- SIGNUP TABLE STRUCTURE ---
+id - int(25)
+username - varchar(25)
+email - varchar(25)
+password - text
+
+--- SIGNUP TABLE DATA (Last 5 users) ---
+Array
+(
+    [id] => 2
+    [username] => ram
+    [email] => ram@gmail
+    [password] => 456
+)
+Array
+(
+    [id] => 1
+    [username] => ram
+    [email] => ram@gmail
+    [password] => 456
+)

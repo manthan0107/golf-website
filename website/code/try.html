@@ -1,0 +1,27 @@
+     <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                            <label for="nameid" class="my-2">Your Name</label>
+                            <input type="text" id="nameid" name="mname" value="<?php echo $row['mname']?>" class="form-control">
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                            <label for="emailid" class="my-2">Your Email</label>
+                            <input type="email" id="emailid" name="memail" value="<?php echo $row['memail']?>"  class="form-control">
+                        </div>
+                        <!-- Second Line field -->
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                            <label for="subjectid" class="my-2">Your Subject</label>
+                            <input type="text" id="subjectid" name="msubject" value="<?php echo $row['msubject']?>"  class="form-control">
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                            <label for="contactid" class="my-2">Contact Number</label>
+                            <input type="number" id="contactid" name="mcontact" value="<?php echo $row['mcontact']?>"  class="form-control">
+                        </div>
+                        <!-- Third Line field -->
+                        <div class="col-12">
+                            <label for="messageid" class="my-2">Message</label>
+                            <input type="text" id="messageid" name="mmessage" value="<?php echo $row['mmessage']?>"  class="form-control">
+                        </div>
+                        <!-- Fourth Line field -->
+                        <div class="col-12">
+                            <input type="submit" value="Send Message" name="submit" class="btn btn-primary my-4 formbtn">
+                        </div>
+                    </div>
