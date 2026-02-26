@@ -1,12 +1,29 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+    alert('Please do login!');
+    window.location.href = 'login.php';
+          </script>";
+    exit;
+}
+
   $aleart=0;
   $con=mysqli_connect("localhost","root","","golfweb");
+
+  // Fetch user email for insertion
+  $user_id = $_SESSION['user_id'];
+  $stmt_user = mysqli_prepare($con, "SELECT email FROM register WHERE id = ?");
+  mysqli_stmt_bind_param($stmt_user, "i", $user_id);
+  mysqli_stmt_execute($stmt_user);
+  $user_res = mysqli_stmt_get_result($stmt_user)->fetch_assoc();
+  $email = $user_res['email'];
+  mysqli_stmt_close($stmt_user);
 
   if(isset($_POST['submit']))
   {
     $name=$_POST['name'];
-    $email=$_POST['email'];
     $cno=$_POST['cno'];
     $age=$_POST['age'];
     $gender=$_POST['gender'];
@@ -22,8 +39,6 @@ session_start();
     }
 
   }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -153,8 +168,12 @@ session_start();
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
-                            </div>
+                               <input type="email"
+class="form-control"
+name="email"
+placeholder="Enter your email"
+value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
+required>
                             <div class="col-md-6">
                                 <label class="form-label">Contact Number <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" min="0" name="cno" placeholder="Enter your phone number" required>

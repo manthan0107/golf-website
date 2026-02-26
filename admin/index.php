@@ -1,26 +1,29 @@
 <?php
 include "lib/db.php";
 
-// Fetch counts
+// Coaching Count
 $qry = "SELECT COUNT(id) AS total FROM coaching";     
 $result = mysqli_query($con, $qry);
 $row = mysqli_fetch_assoc($result);
-$coaching_count = $row['total'] ?? 0;
+$coaching_count = isset($row['total']) ? $row['total'] : 0;
 
+// Membership Count
 $qry1 = "SELECT COUNT(id) AS total FROM membership"; 
 $result1 = mysqli_query($con, $qry1);
 $row1 = mysqli_fetch_assoc($result1);
-$membership_count = $row1['total'] ?? 0;
+$membership_count = isset($row1['total']) ? $row1['total'] : 0;
 
+// Team Count
 $qry2 = "SELECT COUNT(id) AS total FROM team"; 
 $result2 = mysqli_query($con, $qry2);
 $row2 = mysqli_fetch_assoc($result2);
-$team_count = $row2['total'] ?? 0;
+$team_count = isset($row2['total']) ? $row2['total'] : 0;
 
+// Register Count
 $qry3 = "SELECT COUNT(id) AS total FROM register"; 
 $result3 = mysqli_query($con, $qry3);
 $row3 = mysqli_fetch_assoc($result3);
-$register_count = $row3['total'] ?? 0;
+$register_count = isset($row3['total']) ? $row3['total'] : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">

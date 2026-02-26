@@ -1,6 +1,6 @@
 * {
   margin: 0;
-  padding: 0;
+  padding: 1px;
   font-family: 'Source Sans Pro', sans-serif;
 }
 
@@ -45,18 +45,19 @@ a {
   display: flex;
   align-items: center;
   max-width: 100%;
-  /* Changed from 100vw to 100% */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  /* Added subtle shadow */
 }
 
 @media (min-width: 992px) and (max-width: 1250px) {
   .header-style2 .navbar-nav .nav-item .nav-link {
-    padding: 24px 3px !important;
-    font-size: 12px;
+    padding: 24px 10px !important;
+    /* Adjusted padding */
+    font-size: 13px;
   }
 
   .header-style2 .btn-sm span {
     display: none !important;
-    /* Hide text on tight desktop screens */
   }
 
   .header-style2 .btn-sm {
@@ -70,39 +71,61 @@ a {
 
 .header-style2 .navbar-brand img {
   max-width: 120px;
-  /* Base size */
+  max-height: 60px;
+  /* Consistently enforce max-height */
   height: auto;
   transition: transform 0.3s ease;
 }
 
 .header-style2 .navbar-nav .nav-item .nav-link {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  /* Slightly larger for readability */
+  font-weight: 700;
   color: #15395a;
   text-transform: uppercase;
-  padding: 24px 4px !important;
-  /* Ultra-tight padding */
-  transition: color 0.3s ease;
+  padding: 24px 18px !important;
+  transition: all 0.3s ease;
   white-space: nowrap;
-  letter-spacing: 0;
+  letter-spacing: 0.5px;
+  position: relative;
+  /* For pseudo-elements */
 }
 
-.header-style2 .navbar-nav .nav-item .nav-link:hover {
+/* Hover Effect - Color & Underline Animation */
+.header-style2 .navbar-nav .nav-item .nav-link:hover,
+.header-style2 .navbar-nav .nav-item.active .nav-link {
   color: #ceaa4d;
+}
+
+.header-style2 .navbar-nav .nav-item .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 15px;
+  left: 50%;
+  background-color: #ceaa4d;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.header-style2 .navbar-nav .nav-item .nav-link:hover::after,
+.header-style2 .navbar-nav .nav-item.active .nav-link::after {
+  width: 70%;
 }
 
 /* Action Area */
 .header-style2 .attr-nav {
   display: flex;
   align-items: center;
-  gap: 2px;
-  /* Minimal gap */
+  gap: 5px;
 }
 
 .header-style2 .attr-nav .nav-link {
   color: #15395a;
-  font-size: 16px;
-  padding: 3px !important;
+  font-size: 18px;
+  /* Consistent font size */
+  padding: 5px 10px !important;
   transition: color 0.3s ease;
 }
 
@@ -111,20 +134,19 @@ a {
 }
 
 .header-style2 .btn-sm {
-  font-size: 11px;
-  /* Slightly smaller text */
+  font-size: 12px;
   font-weight: 700;
-  padding: 5px 8px;
-  /* Ultra compact */
+  padding: 8px 15px;
   border-radius: 50px;
   white-space: nowrap;
   border: 1px solid transparent;
+  transition: all 0.3s ease;
 }
 
 
 @media (max-width: 1200px) {
   .header-style2 .navbar-nav .nav-item .nav-link {
-    padding: 24px 5px !important;
+    padding: 24px 8px !important;
     font-size: 12px;
   }
 
@@ -156,20 +178,49 @@ a {
   color: #fff;
 }
 
+/* Dropdown Menu Styling */
 .header-style2 .dropdown-menu {
   border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin-top: 5px;
-  padding: 10px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 0;
+  margin-top: 0;
 }
 
 .header-style2 .dropdown-item {
-  font-size: 13px;
-  padding: 10px 20px;
+  font-size: 14px;
+  padding: 12px 20px;
   font-weight: 600;
   color: #15395a;
-  text-transform: uppercase;
+  text-transform: capitalize;
+  border-bottom: 1px solid #f1f1f1;
+  transition: all 0.3s;
+}
+
+.header-style2 .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.header-style2 .dropdown-item:hover {
+  background-color: #f9f9f9;
+  color: #ceaa4d;
+  padding-left: 25px;
+  /* Indent effect */
+}
+
+.header-style2 .position-static .dropdown-menu {
+  top: auto;
+  left: 0;
+}
+
+.header-style2 .dropdown-submenu {
+  position: relative;
+}
+
+.header-style2 .dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-left: 0.1rem;
 }
 
 

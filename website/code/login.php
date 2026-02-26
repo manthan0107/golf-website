@@ -77,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $row_admin = $result_admin->fetch_assoc();
                 $_SESSION['user_id'] = $row_admin['id'];
                 $_SESSION['username'] = $row_admin['username'];
+                $_SESSION['user_email'] = $row_admin['email'];
                 $_SESSION['is_admin'] = true; // Mark as admin
                 header("Location: ../../admin/index.php");
                 exit;

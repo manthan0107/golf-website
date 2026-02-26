@@ -6,29 +6,32 @@ if (!isset($_SESSION['user_id'])) {
     alert('Please do login!');
     window.location.href = 'login.php';
           </script>";
-  // header('Location: login.php');
-
     exit;
 }
-?>
 
-<?php
-$aleart=0;
 $conn=mysqli_connect("localhost","root","","golfweb");
+
+// Fetch user email for insertion
+$user_id = $_SESSION['user_id'];
+$stmt_user = mysqli_prepare($conn, "SELECT email FROM register WHERE id = ?");
+mysqli_stmt_bind_param($stmt_user, "i", $user_id);
+mysqli_stmt_execute($stmt_user);
+$user_res = mysqli_stmt_get_result($stmt_user)->fetch_assoc();
+$Email = $user_res['email'];
+mysqli_stmt_close($stmt_user);
+
+$aleart=0;
 if(isset($_POST['submit']))
 {
     $Name=$_POST['tname'];
     $Players=$_POST['tplayers'];
     $Date=$_POST['tdate'];
     $Time=$_POST['ttime'];
-    $Email=$_POST['temail'];
     $Contact=$_POST['tcontact'];
     $Message=$_POST['tmessage'];
     
-
-
     $Insert_query="INSERT INTO `tee_time`(`id`, `name`, `players`, `date`, `time`, `email`, `contact`, `message`) VALUES (null,'$Name','$Players','$Date','$Time','$Email','$Contact','$Message')";
-    
+
         if(mysqli_query($conn,$Insert_query))
         {
             $aleart=1;
@@ -49,14 +52,15 @@ if(isset($_POST['submit']))
     <title>Tee-Times Page</title>
     <link rel="shortcut icon" href="../About_Page/Img/LogoForTitle.png" />
     <!-- ===============Bootstrap Link====================== -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
 
 
     <!-- ===============Font-Awesome Icon Link====================== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="../css/style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
@@ -67,71 +71,7 @@ if(isset($_POST['submit']))
             padding: 0;
         }
 
-        /* header style */
-
-        .glass {
-            width: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-item,
-        ul,
-        a {
-            font-size: 17px;
-            font-weight: 700;
-            color: black;
-            padding: 0 7px;
-        }
-
-        .nav-item,
-        ul,
-        a:hover {
-            font-weight: 700;
-            color: #282b2d;
-        }
-
-        .header-style2 .navbar-brand img {
-            max-height: 60px;
-        }
-
-        .header-style2 .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-style2 .position-static .dropdown-menu {
-            top: auto;
-            left: 0;
-        }
-
-        .header-style2 .dropdown-submenu {
-            position: relative;
-        }
-
-        .header-style2 .dropdown-submenu .dropdown-menu {
-            top: 0;
-            left: 100%;
-            margin-left: 0.1rem;
-        }
-
-        .header-style2 .attr-nav .nav-link {
-            color: #333;
-            font-size: 18px;
-        }
-
-        .header-style2 .btn-primary {
-            background-color: #ceaa4d;
-            border-color: #ceaa4d;
-            font-weight: 500;
-        }
-
-        .header-style2 .btn-primary:hover {
-            background-color: #15395a;
-            border-color: #0a3a72;
-            transition: 1s;
-        }
+        /* --------------Styling For Hero Section--------------- */
 
 
         /* --------------Styling For Hero Section--------------- */
@@ -749,8 +689,13 @@ if(isset($_POST['submit']))
                                 <!-- Second Line field -->
                                 <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
                                     <label for="emailid" class="my-2">Your Email</label>
-                                    <input type="email" id="emailid" name="temail" class="form-control"
-                                        placeholder="name@example.com">
+                                    <input type="email"
+id="emailid"
+name="email"
+class="form-control"
+placeholder="name@example.com"
+value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
+required>
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
                                     <label for="contactid" class="my-2">Contact Number</label>

@@ -6,13 +6,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- ===============Bootstrap Link====================== -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
   <!-- ===============Font-Awesome Icon Link====================== -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+  
+  <link rel="stylesheet" href="../css/style.css">
+  
 
   <title>About Page</title>
   <style>
@@ -29,8 +30,8 @@
     a {
       font-size: 17px;
       font-weight: 700;
-      color: black;
-      padding: 0 7px;
+      color: #15395a;
+      padding: 5px ;
     }
 
     .nav-item,
@@ -38,7 +39,7 @@
     a:hover {
       font-size: 17px;
       font-weight: 700;
-      color: #282b2d;
+      color: #ceaa4d;
     }
 
     .header-style2 .navbar-brand img {
@@ -50,6 +51,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
+    
     .header-style2 .position-static .dropdown-menu {
       top: auto;
       left: 0;
@@ -66,7 +68,7 @@
     }
 
     .header-style2 .attr-nav .nav-link {
-      color: #333;
+      color: #15395a;
       font-size: 18px;
     }
 

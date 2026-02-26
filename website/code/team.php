@@ -1,6 +1,38 @@
 <?php
 session_start();
+    $alert = 0;
     $con=mysqli_connect("localhost","root","","golfweb");
+
+    if (isset($_POST['submit'])) {
+        if (!isset($_SESSION['user_id'])) {
+            echo "<script>alert('Please log in to register a team.'); window.location.href='login.php';</script>";
+            exit;
+        }
+
+        $name = $_POST['name'];
+        $designation = $_POST['designation'];
+        $gender = $_POST['gender'];
+        $experience = (int)$_POST['experience'];
+        $user_id = $_SESSION['user_id'];
+        
+        // Fetch current user email from database
+        $stmt_user = $con->prepare("SELECT email FROM register WHERE id = ?");
+        $stmt_user->bind_param("i", $user_id);
+        $stmt_user->execute();
+        $user_res = $stmt_user->get_result()->fetch_assoc();
+        $email = $user_res['email'];
+        $stmt_user->close();
+
+        $stmt = $con->prepare("INSERT INTO team (name, designation, gender, experience, email) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssis", $name, $designation, $gender, $experience, $email);
+
+        if ($stmt->execute()) {
+            $alert = 1; // success
+        } else {
+            $alert = 2; // error
+        }
+        $stmt->close();
+    }
 
     $sql = "SELECT name, designation, image FROM team";
     
@@ -43,6 +75,21 @@ session_start();
       </div>
     </div>
   </section>
+
+    <!-- ===Aleart using PHP -->
+     <?php
+     if($alert==1) {
+        echo '<div class="alert alert-success alert-dismissible fade show container mt-4" role="alert">
+  <strong>Success!</strong> Your Team added successfully. It is now visible in your Profile.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+     } elseif ($alert==2) {
+        echo '<div class="alert alert-danger alert-dismissible fade show container mt-4" role="alert">
+  <strong>Error!</strong> Failed to add team.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+     }
+     ?>
 
   <!-- team member -->
   <section class="py-5">
@@ -92,6 +139,46 @@ session_start();
             ?>
         </div>
     </div>
+</section>
+
+<!-- Team Registration Form -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Register Your Team</h2>
+    <form class="p-4 shadow rounded bg-white" method="post">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Team Name</label>
+          <input type="text" class="form-control" name="name" placeholder="Enter Team Name" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Role / Designation</label>
+          <input type="text" class="form-control" name="designation" placeholder="e.g. Captain, Player" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Gender</label>
+          <select class="form-select" name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Experience (Years)</label>
+          <input type="number" min="0" class="form-control" name="experience" placeholder="0" required>
+        </div>
+      </div>
+      
+      <?php if (!isset($_SESSION['user_id'])): ?>
+          <p class="text-danger text-center">You must be logged in to register a team.</p>
+          <a href="login.php" class="btn w-100" style="background-color: #25395b; color: #fff;">Log In to Register</a>
+      <?php else: ?>
+          <input type="submit" class="btn w-100" name="submit" value="Register Team" style="background-color: #25395b; color: #fff;"/>
+      <?php endif; ?>
+    </form>
+  </div>
 </section>
 
 

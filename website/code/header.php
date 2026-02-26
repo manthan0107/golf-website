@@ -50,18 +50,25 @@
       <!-- Menu Items (Center) -->
       <div class="collapse navbar-collapse order-lg-2" id="mainNav">
         <ul class="navbar-nav mx-auto">
+          <?php 
+            $current_page = basename($_SERVER['PHP_SELF']); 
+            function isActive($page) {
+                global $current_page;
+                return ($current_page == $page) ? 'active' : '';
+            }
+          ?>
           <!-- Home -->
-          <li class="nav-item"><a class="nav-link" href="index.php">HOME</a></li>
+          <li class="nav-item <?php echo isActive('index.php'); ?>"><a class="nav-link" href="index.php">HOME</a></li>
 
           <!-- Pages dropdown -->
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown <?php echo (in_array($current_page, ['about.php', 'team.php', 'time.php', 'error.php'])) ? 'active' : ''; ?>">
             <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               PAGES
             </a>
             <ul class="dropdown-menu" aria-labelledby="pagesDropdown">
               <li><a class="dropdown-item" href="about.php">About</a></li>
-              <li><a class="dropdown-item" href="team.php">TEAM</a></li>
+              <li><a class="dropdown-item" href="team.php">Team</a></li>
               <li><a class="dropdown-item" href="time.php">Tee-Time</a></li>
               <li>
                 <hr class="dropdown-divider">
@@ -71,21 +78,21 @@
           </li>
 
           <!-- Course dropdown -->
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown <?php echo (in_array($current_page, ['coaching.php', 'tounament.php'])) ? 'active' : ''; ?>">
             <a class="nav-link dropdown-toggle" href="#" id="courseDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               COURSE
             </a>
             <ul class="dropdown-menu" aria-labelledby="courseDropdown">
               <li><a class="dropdown-item" href="coaching.php">Golf Coaching</a></li>
-              <li><a class="dropdown-item" href="tounament.php">Host Tounament</a></li>
+              <li><a class="dropdown-item" href="tounament.php">Host Tournament</a></li>
             </ul>
           </li>
 
           <!-- Other Links -->
-          <li class="nav-item"><a class="nav-link" href="service.php">SERVICE</a></li>
-          <li class="nav-item"><a class="nav-link" href="blog.php">BLOG</a></li>
-          <li class="nav-item"><a class="nav-link" href="contact.php">CONTACT</a></li>
+          <li class="nav-item <?php echo isActive('service.php'); ?>"><a class="nav-link" href="service.php">SERVICE</a></li>
+          <li class="nav-item <?php echo isActive('blog.php'); ?>"><a class="nav-link" href="blog.php">BLOG</a></li>
+          <li class="nav-item <?php echo isActive('contact.php'); ?>"><a class="nav-link" href="contact.php">CONTACT</a></li>
         </ul>
       </div>
 

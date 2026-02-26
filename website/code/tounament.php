@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -7,25 +6,31 @@ if (!isset($_SESSION['user_id'])) {
     alert('Please do login!');
     window.location.href = 'login.php';
           </script>";
-  // header('Location: login.php');
-
     exit;
 }
-?>
-<?php
-  $aleart=0;
-  $con=mysqli_connect("localhost","root","","golfweb");
 
-  if(isset($_POST['submit']))
-  {
-      $tname=$_POST['tname'];
-      $oname=$_POST['oname'];
-      $date=$_POST['date'];
-      $location=$_POST['location'];
-      $email=$_POST['email'];
-      $otherd=$_POST['otherd'];
+$con=mysqli_connect("localhost","root","","golfweb");
 
-      $qry="INSERT INTO `tounament`(`id`, `tname`, `oname`, `date`, `location`, `email`, `otherd`) VALUES (null,'$tname','$oname','$date','$location','$email','$otherd')";
+// Fetch user email for insertion
+$user_id = $_SESSION['user_id'];
+$stmt_user = mysqli_prepare($con, "SELECT email FROM register WHERE id = ?");
+mysqli_stmt_bind_param($stmt_user, "i", $user_id);
+mysqli_stmt_execute($stmt_user);
+
+$user_res = mysqli_stmt_get_result($stmt_user)->fetch_assoc();
+$email = $user_res['email'];
+mysqli_stmt_close($stmt_user);
+
+$aleart=0;
+if(isset($_POST['submit']))
+{
+    $tname=$_POST['tname'];
+    $oname=$_POST['oname'];
+    $date=$_POST['date'];
+    $location=$_POST['location'];
+    $otherd=$_POST['otherd'];
+
+    $qry="INSERT INTO `tounament`(`id`, `tname`, `oname`, `date`, `location`, `email`, `otherd`) VALUES (null,'$tname','$oname','$date','$location','$email','$otherd')";
 
       if(mysqli_query($con,$qry))
       {
@@ -118,7 +123,12 @@ if (!isset($_SESSION['user_id'])) {
       </div>
       <div class="mb-3">
         <label class="form-label">Contact Email</label>
-        <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
+       <input type="email"
+name="email"
+class="form-control"
+placeholder="Enter Email"
+value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
+required>
       </div>
       <div class="mb-3">
         <label class="form-label">Additional Details</label>
