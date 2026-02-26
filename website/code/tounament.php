@@ -16,7 +16,6 @@ $user_id = $_SESSION['user_id'];
 $stmt_user = mysqli_prepare($con, "SELECT email FROM register WHERE id = ?");
 mysqli_stmt_bind_param($stmt_user, "i", $user_id);
 mysqli_stmt_execute($stmt_user);
-
 $user_res = mysqli_stmt_get_result($stmt_user)->fetch_assoc();
 $email = $user_res['email'];
 mysqli_stmt_close($stmt_user);
