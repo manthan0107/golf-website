@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2026 at 09:56 AM
+-- Generation Time: Feb 27, 2026 at 03:49 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -123,7 +123,8 @@ INSERT INTO `membership` (`id`, `name`, `email`, `subject`, `contact`, `message`
 (1, 'Harshit', 'variya@gmail.com', 'Maths', 98252, 'Hello from Harshit'),
 (4, 'meet', 'meet@gmail.com', 'Maths', 2147483647, 'Hello from meet'),
 (5, 'raj', 'raj@gmail.com', 'science', 2147483647, 'Checking Aleartbox '),
-(6, 'munjain', 'munjanimanthan02@gmail.com', 'golf', 2147483647, 'good one');
+(6, 'munjain', 'munjanimanthan02@gmail.com', 'golf', 2147483647, 'good one'),
+(7, 'manthan', 'munjanimanthan02@gmail.co', 'golf', 2147483647, 'good one');
 
 -- --------------------------------------------------------
 
@@ -145,8 +146,8 @@ CREATE TABLE `plan` (
 --
 
 INSERT INTO `plan` (`id`, `title`, `price`, `duration`, `image`, `features`) VALUES
-(1, 'gold', '298', '6 month', 'Screenshot 2024-07-28 092', '20per'),
-(3, 'silver', '299', '6 month', 'Screenshot (242).png', '10 good bols');
+(3, 'silver', '299', '6 month', 'Screenshot (242).png', '10 good bols'),
+(4, 'silver', '299', '2', 'download.png', 'good pace');
 
 -- --------------------------------------------------------
 
@@ -158,30 +159,32 @@ CREATE TABLE `register` (
   `id` int(20) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `register`
 --
 
-INSERT INTO `register` (`id`, `username`, `email`, `password`) VALUES
-(1, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$iKEQ8hHDTBfCiXcQA1aOiOw9pcGLhaiGa.isxgT8K.kRp7YLkdiDa'),
-(2, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$Br.iWwkdZ9p/UXkLlDYqLe41STszIzkp1acPtJfM8fgYiN1k5YNcC'),
-(3, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$OpEva33AJV7L2PKn66Q48eAC0ZGSzQfziMQMw2n0YPT5wNffIbsYy'),
-(4, 'manthan munjani', 'munjanimanthan02@gmail.co', 'm.m.k.306'),
-(5, 'manthan munjani', 'munjanimanthan02@gmail.co', 'm.m.k.306'),
-(6, 'manthan munjani', 'man1409@gmail.com', 'm.m.k.0107'),
-(7, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$BfxsQt4eU1gkG0723AvDN.fl.blyTcrKnEkEcZgCpw0Vkll2d5MT.'),
-(8, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$GNKVIWW3yA7u8/FZv21u8udt/vfolcyxCRC9fFTz5AL4NdZ03Jtwi'),
-(9, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$k/uijBGjB2pEJ4tb3Bb7tei9rTE7rg0JBUX.cSDU6j7gzZY2kjzyC'),
-(10, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$BYAKWMCl9VSpnMkDZnj9dObAXDnN8TY.bRN6ZI9xJWMoAl5Eq8hTu'),
-(11, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$JHTTdXtUCplC52OaSf6JqudzLsRLR5loY8jMyPOTL42miXaZRG7sm'),
-(12, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$VAQtWRuyV.H7Lq0SqZ9NEOeHRuHLNWtdvQBV6fEqhE35O9SWVza.K'),
-(13, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$oV0mtwY4v2B1Un2TBWA.de4gUFR0mB4be5ozHoT6bjnNQD4TNShfW'),
-(14, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$wh0.JyvFKfSyU71PxTE/CuyliAb2uMgIl..ZirJG/HGEB3IoPMrZO'),
-(15, 'manthan munjani', 'munjanimanthan02@gmail.com', '$2y$10$5tjwv36UMjRqC2wPVUtkq.4p1n8HCvRNAxYkiioQEamN3UxS4B3..'),
-(16, 'manthan munjani', 'mycollage110@gmail.com', '$2y$10$K.yCyk8oXcazFEjTXKoQ9.ocq0Fa2BG03CFIpfL4u2NHvQAQ7ahNW');
+INSERT INTO `register` (`id`, `username`, `email`, `password`, `phone`, `image`) VALUES
+(1, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$iKEQ8hHDTBfCiXcQA1aOiOw9pcGLhaiGa.isxgT8K.kRp7YLkdiDa', '9879451655', NULL),
+(2, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$Br.iWwkdZ9p/UXkLlDYqLe41STszIzkp1acPtJfM8fgYiN1k5YNcC', NULL, NULL),
+(3, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$OpEva33AJV7L2PKn66Q48eAC0ZGSzQfziMQMw2n0YPT5wNffIbsYy', NULL, NULL),
+(4, 'manthan munjani', 'munjanimanthan02@gmail.co', 'm.m.k.306', NULL, NULL),
+(5, 'manthan munjani', 'munjanimanthan02@gmail.co', 'm.m.k.306', NULL, NULL),
+(6, 'manthan munjani', 'man1409@gmail.com', 'm.m.k.0107', NULL, NULL),
+(7, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$BfxsQt4eU1gkG0723AvDN.fl.blyTcrKnEkEcZgCpw0Vkll2d5MT.', NULL, NULL),
+(8, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$GNKVIWW3yA7u8/FZv21u8udt/vfolcyxCRC9fFTz5AL4NdZ03Jtwi', NULL, NULL),
+(9, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$k/uijBGjB2pEJ4tb3Bb7tei9rTE7rg0JBUX.cSDU6j7gzZY2kjzyC', NULL, NULL),
+(10, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$BYAKWMCl9VSpnMkDZnj9dObAXDnN8TY.bRN6ZI9xJWMoAl5Eq8hTu', NULL, NULL),
+(11, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$JHTTdXtUCplC52OaSf6JqudzLsRLR5loY8jMyPOTL42miXaZRG7sm', NULL, NULL),
+(12, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$VAQtWRuyV.H7Lq0SqZ9NEOeHRuHLNWtdvQBV6fEqhE35O9SWVza.K', NULL, NULL),
+(13, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$oV0mtwY4v2B1Un2TBWA.de4gUFR0mB4be5ozHoT6bjnNQD4TNShfW', NULL, NULL),
+(14, 'manthan munjani', 'munjanimanthan02@gmail.co', '$2y$10$wh0.JyvFKfSyU71PxTE/CuyliAb2uMgIl..ZirJG/HGEB3IoPMrZO', NULL, NULL),
+(15, 'manthan munjani', 'munjanimanthan02@gmail.com', '$2y$10$5tjwv36UMjRqC2wPVUtkq.4p1n8HCvRNAxYkiioQEamN3UxS4B3..', NULL, NULL),
+(16, 'manthan munjani', 'mycollage110@gmail.com', '$2y$10$K.yCyk8oXcazFEjTXKoQ9.ocq0Fa2BG03CFIpfL4u2NHvQAQ7ahNW', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -193,16 +196,18 @@ CREATE TABLE `signup` (
   `id` int(25) NOT NULL,
   `username` varchar(25) NOT NULL,
   `email` varchar(25) NOT NULL,
-  `password` text NOT NULL
+  `password` text NOT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `signup`
 --
 
-INSERT INTO `signup` (`id`, `username`, `email`, `password`) VALUES
-(1, 'ram', 'ram@gmail', '456'),
-(2, 'ram', 'ram@gmail', '456');
+INSERT INTO `signup` (`id`, `username`, `email`, `password`, `phone`, `image`) VALUES
+(1, 'Manthan Munjani', 'mycollage110@gmail.com', '$2y$10$Fvzj1PqyRAj2BexqbNHMQe6M3W4B5.5F7t.AexbCLGi6W2KXlIxbK', '9879451655', 'admin_69a102af6ed1a.png'),
+(2, 'ram', 'ram@gmail', '456', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -216,15 +221,18 @@ CREATE TABLE `team` (
   `designation` varchar(25) NOT NULL,
   `gender` varchar(10) NOT NULL,
   `experience` int(2) NOT NULL,
-  `image` varchar(50) NOT NULL
+  `image` varchar(50) NOT NULL,
+  `email` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `team`
 --
 
-INSERT INTO `team` (`id`, `name`, `designation`, `gender`, `experience`, `image`) VALUES
-(3, 'aryan', 'coath', 'Male', 3, 'r1.png');
+INSERT INTO `team` (`id`, `name`, `designation`, `gender`, `experience`, `image`, `email`) VALUES
+(3, 'aryan', 'coath', 'Male', 3, 'r1.png', NULL),
+(4, 'Manthan Munjani', 'playar', 'Male', 1, 'download.png', NULL),
+(5, 'Manthan Munjani', 'playar', 'Male', 1, '', 'munjanimanthan02@gmail.co');
 
 -- --------------------------------------------------------
 
@@ -256,7 +264,8 @@ INSERT INTO `tee_time` (`id`, `name`, `players`, `date`, `time`, `email`, `conta
 (6, 'Dhanani', 3, '2000-01-01', '05:34:00', 'rahul@gmail.com', 98252, 'Aleart box is not working so i am checking it '),
 (17, 'Dhanani', 3, '2000-01-01', '05:34:00', 'rahul@gmail.com', 98252, 'Aleart box is not working so i am checking it '),
 (19, 'Dhanani', 3, '2000-01-01', '05:34:00', 'rahul@gmail.com', 98252, 'Aleart box is not working so i am checking it '),
-(21, 'Manthan Munjani', 3, '2026-02-14', '16:00:00', 'mycollage110@gmail.com', 2147483647, 'ok');
+(21, 'Manthan Munjani', 3, '2026-02-14', '16:00:00', 'mycollage110@gmail.com', 2147483647, 'ok'),
+(22, 'munjani', 1, '2026-02-01', '08:15:00', 'munjanimanthan02@gmail.co', 2147483647, 'ok');
 
 -- --------------------------------------------------------
 
@@ -372,13 +381,13 @@ ALTER TABLE `contact`
 -- AUTO_INCREMENT for table `membership`
 --
 ALTER TABLE `membership`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `plan`
 --
 ALTER TABLE `plan`
-  MODIFY `id` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `register`
@@ -396,13 +405,13 @@ ALTER TABLE `signup`
 -- AUTO_INCREMENT for table `team`
 --
 ALTER TABLE `team`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tee_time`
 --
 ALTER TABLE `tee_time`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `tounament`
