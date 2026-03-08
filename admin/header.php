@@ -1,4 +1,9 @@
-            <!-- Navbar Start -->
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+           <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-secondary navbar-light sticky-top px-4 py-0">
                 <a href="index.php" class="navbar-brand d-flex d-lg-none me-4">
                     <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
@@ -75,13 +80,23 @@
                     </div>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="<?php echo isset($_SESSION['admin_image']) ? 'img/uploads/' . $_SESSION['admin_image'] : 'img/user.jpg'; ?>" alt="" style="width: 40px; height: 40px; object-fit: cover;">
+                            <?php
+$image = "img/user.jpg";
+
+if(isset($_SESSION['admin_image']) && !empty($_SESSION['admin_image'])){
+    $image = "img/uploads/" . $_SESSION['admin_image'];
+}
+?>
+
+<img class="rounded-circle me-lg-2"
+     src="<?php echo $image; ?>"
+     style="width:40px;height:40px;object-fit:cover;">
                             <span class="d-none d-lg-inline-flex"><?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin'; ?></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="profile.php" class="dropdown-item">My Profile</a>
                             <a href="profile.php" class="dropdown-item">Settings</a>
-                            <a href="../website/code/index.php" class="dropdown-item">Log Out</a>
+                            <a href="signin.php" class="dropdown-item">Log Out</a>
                         </div>
                     </div>
                 </div>

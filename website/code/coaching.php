@@ -174,6 +174,7 @@ name="email"
 placeholder="Enter your email"
 value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
 required>
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label">Contact Number <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" min="0" name="cno" placeholder="Enter your phone number" required>

@@ -1,53 +1,63 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include "lib/db.php";
 
-$error = ""; // default empty
+$error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email    = $_POST['email'];
+
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Use prepared statement to prevent SQL injection
+    // Prepare statement
     $stmt = $con->prepare("SELECT * FROM signup WHERE email=?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
 
-        // Check password. 
-        // We support both plain-text (old) and hashed (new) for backwards compatibility
+        $row = $result->fetch_assoc();
         $login_success = false;
-        
-        // If password string is 60 chars (bcrypt) or starts with $2y$ (standard php password_hash)
         if (password_verify($password, $row['password'])) {
             $login_success = true;
+        } elseif (md5($password) === $row['password']) {
+            $login_success = true;
         } elseif ($password === $row['password']) {
-            // Legacy plain text fallback
+            $login_success = true;
+        } elseif (trim($password) === trim($row['password'])) {
             $login_success = true;
         }
 
         if ($login_success) {
-            // set session
+
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
-            
-            // Set user image default
-            if(isset($row['image']) && !empty($row['image'])){
+            $_SESSION['user_email'] = $row['email'];
+            $_SESSION['phone'] = $row['phone'];
+            $_SESSION['is_admin'] = true;
+
+            // Admin image
+            if (!empty($row['image'])) {
                 $_SESSION['admin_image'] = $row['image'];
+            } else {    
+                $_SESSION['admin_image'] = "";
             }
 
-            //  to index.php
+            session_write_close();
             header("Location: index.php");
             exit;
+
         } else {
             $error = "Invalid Password!";
         }
+
     } else {
         $error = "Invalid Email or Password!";
     }
+
     $stmt->close();
 }
 ?>
@@ -116,9 +126,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <input type="email" class="form-control" name="email" id="floatingInput" placeholder="name@example.com" required>
                                 <label for="floatingInput">Email address</label>
                             </div>
-                            <div class="form-floating mb-4">
-                                <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password" required>
+                            <div class="form-floating mb-4 position-relative">
+                                <input type="password" class="form-control pe-5" name="password" id="floatingPassword" placeholder="Password" required>
                                 <label for="floatingPassword">Password</label>
+                                <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer;" onclick="togglePasswordVisibility('floatingPassword', this)">
+                                    <i class="fa fa-eye"></i>
+                                </span>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="form-check">
@@ -151,6 +164,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+        function togglePasswordVisibility(inputId, iconSpan) {
+            const input = document.getElementById(inputId);
+            const icon = iconSpan.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 
 </html>

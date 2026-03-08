@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include "lib/db.php";
 
 if (!isset($_SESSION['user_id'])) {
@@ -114,12 +116,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $stmt->bind_param("si", $hashed_password, $admin_id);
 
         if ($stmt->execute()) {
-             $_SESSION['msg'] = "Password changed successfully!";
-             $_SESSION['msg_type'] = "success";
-        } else {
-             $_SESSION['msg'] = "Failed to change password.";
-             $_SESSION['msg_type'] = "danger";
-        }
+
+    $_SESSION['username'] = $username;
+    $_SESSION['admin_image'] = $img_name;
+
+    $_SESSION['msg'] = "Profile updated successfully!";
+    $_SESSION['msg_type'] = "success";
+
+    header("Location: profile.php");
+    exit;
+}
         $stmt->close();
     }
 }

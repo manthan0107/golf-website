@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['user_id'])) {
     header("Location: signin.php");
     exit;
@@ -7,12 +9,27 @@ if (!isset($_SESSION['user_id'])) {
 include "lib/db.php";
 
 $admin_id = $_SESSION['user_id'];
-
 // Fetch Admin Details
-$stmt = $con->prepare("SELECT * FROM signup WHERE id = ?");
+$stmt = $con->prepare("SELECT username,email,phone,image FROM signup WHERE id = ?");
 $stmt->bind_param("i", $admin_id);
 $stmt->execute();
-$admin = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$admin = $result->fetch_assoc();
+
+if($admin){
+    $_SESSION['username'] = $admin['username'];
+    $_SESSION['admin_image'] = $admin['image'];
+    $_SESSION['email'] = $admin['email'];
+    $_SESSION['phone'] = $admin['phone'];
+}
+if(!$admin){
+    $admin = [
+        'username' => 'Admin',
+        'email' => 'Not set',
+        'phone' => '',
+        'image' => ''
+    ];
+}
 $stmt->close();
 
 // Fetch counts
@@ -81,23 +98,15 @@ $admin_image = !empty($admin['image']) ? "img/uploads/" . $admin['image'] : "img
                         <div class="bg-secondary rounded p-4 text-center">
                             <img class="rounded-circle mb-3" src="<?php echo htmlspecialchars($admin_image); ?>" alt="" style="width: 150px; height: 150px; object-fit: cover;">
                             <h4 class="mb-1">
-<?php 
-echo htmlspecialchars(
-    isset($admin['username']) ? $admin['username'] : 'Admin Name'
-); 
-?>
+<?php echo htmlspecialchars(isset($admin['username']) ? $admin['username'] : 'Admin'); ?>
 </h4>
                             <p class="text-primary mb-3">Administrator</p>
                             
                             <ul class="list-unstyled text-start mt-4 mb-0">
-                                <li class="mb-2"><i class="fa fa-envelope text-primary me-2"></i> <?php echo htmlspecialchars($admin['email']); ?></li>
+                                <li class="mb-2"><i class="fa fa-envelope text-primary me-2"></i> <?php echo !empty($admin['email']) ? $admin['email'] : 'Not set'; ?></li>
                                 <li>
 <i class="fa fa-phone text-primary me-2"></i>
-<?php 
-echo htmlspecialchars(
-    isset($admin['phone']) ? $admin['phone'] : 'Not set'
-); 
-?>
+<?php echo !empty($admin['phone']) ? $admin['phone'] : 'Not set'; ?>
 </li>
                             </ul>
                         </div>
@@ -141,7 +150,7 @@ echo htmlspecialchars(
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="username" class="form-label">Name</label>
-                                        <input type="text" class="form-control" style="background-color:#000;" id="username" name="username" value="<?php echo htmlspecialchars($admin['username']); ?>" required>
+                                        <input type="text" class="form-control" style="background-color:#000;" id="username" name="username" value="<?php echo htmlspecialchars(isset($admin['username']) ? $admin['username'] : ''); ?>" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="phone" class="form-label">Phone Number</label>
@@ -172,17 +181,26 @@ value="<?php echo htmlspecialchars(isset($admin['phone']) ? $admin['phone'] : ''
                             <form action="profile_action.php" method="POST">
                                 <input type="hidden" name="action" value="change_password">
                                 <div class="row g-3">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 position-relative">
                                         <label for="current_password" class="form-label">Current Password</label>
-                                        <input type="password" class="form-control" style="background-color:#000;" id="current_password" name="current_password" required>
+                                        <input type="password" class="form-control pe-5" style="background-color:#000;" id="current_password" name="current_password" required>
+                                        <span class="position-absolute bottom-0 end-0 mb-2 me-3 toggle-password" style="cursor: pointer;" onclick="togglePasswordVisibility('current_password', this)">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 position-relative">
                                         <label for="new_password" class="form-label">New Password</label>
-                                        <input type="password" class="form-control" style="background-color:#000;" id="new_password" name="new_password" required minlength="6">
+                                        <input type="password" class="form-control pe-5" style="background-color:#000;" id="new_password" name="new_password" required minlength="6">
+                                        <span class="position-absolute bottom-0 end-0 mb-2 me-3 toggle-password" style="cursor: pointer;" onclick="togglePasswordVisibility('new_password', this)">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 position-relative">
                                         <label for="confirm_password" class="form-label">Confirm New Password</label>
-                                        <input type="password" class="form-control" style="background-color:#000;" id="confirm_password" name="confirm_password" required minlength="6">
+                                        <input type="password" class="form-control pe-5" style="background-color:#000;" id="confirm_password" name="confirm_password" required minlength="6">
+                                        <span class="position-absolute bottom-0 end-0 mb-2 me-3 toggle-password" style="cursor: pointer;" onclick="togglePasswordVisibility('confirm_password', this)">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
                                     </div>
                                     <div class="col-12 mt-4">
                                         <button type="submit" class="btn btn-warning"><i class="fa fa-key me-2"></i>Change Password</button>
@@ -216,5 +234,20 @@ value="<?php echo htmlspecialchars(isset($admin['phone']) ? $admin['phone'] : ''
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        function togglePasswordVisibility(inputId, iconSpan) {
+            const input = document.getElementById(inputId);
+            const icon = iconSpan.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

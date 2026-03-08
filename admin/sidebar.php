@@ -10,7 +10,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </a>
         <div class="d-flex align-items-center ms-4 mb-4">
             <div class="position-relative">
-                <img class="rounded-circle" src="<?php echo isset($_SESSION['admin_image']) ? 'img/uploads/' . $_SESSION['admin_image'] : 'img/user.jpg'; ?>" alt="" style="width: 40px; height: 40px; object-fit: cover;">
+                <img class="rounded-circle" src="<?php echo (!empty($_SESSION['admin_image'])) ? 'img/uploads/' . $_SESSION['admin_image'] : 'img/user.jpg'; ?>" alt="" style="width: 40px; height: 40px; object-fit: cover;">
                 <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
             </div>
             <div class="ms-3">

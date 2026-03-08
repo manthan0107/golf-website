@@ -11,6 +11,9 @@
         $stmt->bind_param("sss", $username, $email, $password);
         $stmt->execute();
         $stmt->close();
+        
+        header("Location: signin.php");
+        exit;
     }
 ?>
 <!DOCTYPE html>
@@ -74,9 +77,12 @@
                             <input type="email" class="form-control" name="email" id="floatingInput" placeholder="name@example.com" required>
                             <label for="floatingInput">Email address</label>
                         </div>
-                        <div class="form-floating mb-4">
-                            <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password" required>
+                        <div class="form-floating mb-4 position-relative">
+                            <input type="password" class="form-control pe-5" name="password" id="floatingPassword" placeholder="Password" required>
                             <label for="floatingPassword">Password</label>
+                            <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer;" onclick="togglePasswordVisibility('floatingPassword', this)">
+                                <i class="fa fa-eye"></i>
+                            </span>
                         </div>
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div class="form-check">
@@ -109,6 +115,21 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+        function togglePasswordVisibility(inputId, iconSpan) {
+            const input = document.getElementById(inputId);
+            const icon = iconSpan.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 
 </html>

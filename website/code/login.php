@@ -43,51 +43,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // --- LOGIN LOGIC ---
     elseif (isset($_POST['action']) && $_POST['action'] == 'login') {
-        $email    = $_POST['email'];
-        $password = $_POST['password'];
-        $login_successful = false;
 
-        // 1. Check User in 'register' table
-        $stmt = $con->prepare("SELECT * FROM register WHERE email=?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            if (password_verify($password, $row['password'])) {
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['username'] = $row['username'];
-                $_SESSION['user_email'] = $row['email'];
-                $login_successful = true;
-                header("Location: index.php");
-                exit;
-            }
-        }
-        $stmt->close();
+    // 1️⃣ Fetch admin by email
+$stmt_admin = $con->prepare("SELECT * FROM signup WHERE email=?");
+$stmt_admin->bind_param("s", $email);
+$stmt_admin->execute();
+$result_admin = $stmt_admin->get_result();
 
-        // 2. Check Admin in 'signup' table (if user login failed)
-        if (!$login_successful) {
-            $stmt_admin = $con->prepare("SELECT * FROM signup WHERE email=? AND password=?");
-            $stmt_admin->bind_param("ss", $email, $password);
-            $stmt_admin->execute();
-            $result_admin = $stmt_admin->get_result();
+if ($result_admin->num_rows > 0) {
 
-            if ($result_admin->num_rows > 0) {
-                $row_admin = $result_admin->fetch_assoc();
-                $_SESSION['user_id'] = $row_admin['id'];
-                $_SESSION['username'] = $row_admin['username'];
-                $_SESSION['user_email'] = $row_admin['email'];
-                $_SESSION['is_admin'] = true; // Mark as admin
-                header("Location: ../../admin/index.php");
-                exit;
-            } else {
-                $error = "Invalid Email or Password!";
-            }
-            $stmt_admin->close();
-        }
+    $row_admin = $result_admin->fetch_assoc();
+
+    // 2️⃣ Verify password in PHP
+    if (
+    password_verify($password, $row_admin['password']) ||
+    md5($password) == $row_admin['password'] ||
+    $password == $row_admin['password']
+) {
+
+        $_SESSION['user_id'] = $row_admin['id'];
+$_SESSION['username'] = $row_admin['username'];
+$_SESSION['user_email'] = $row_admin['email'];
+$_SESSION['phone'] = $row_admin['phone'];
+$_SESSION['is_admin'] = true;
+
+if (!empty($row_admin['image'])) {
+    $_SESSION['admin_image'] = $row_admin['image'];
+} else {
+    $_SESSION['admin_image'] = "user.jpg";
+}
+
+        header("Location: ../../admin/index.php");
+        exit;
     }
 }
+
+$stmt_admin->close();
+
+    // 2️⃣ Check Normal User
+    $stmt = $con->prepare("SELECT * FROM register WHERE email=?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+
+        $row = $result->fetch_assoc();
+
+        if (password_verify($password, $row['password'])) {
+
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['username'] = $row['username'];
+            $_SESSION['user_email'] = $row['email'];
+
+            header("Location: index.php");
+            exit;
+        }
+    }
+
+    $stmt->close();
+
+    $error = "Invalid Email or Password!";
+}
+    }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

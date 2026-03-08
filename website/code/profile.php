@@ -196,7 +196,7 @@ $stmt->close();
                 <div class="profile-header-card mb-4">
                     <img src="<?php echo $profile_img; ?>" alt="Profile" class="profile-avatar-lg">
                     <h4><?php echo htmlspecialchars($user_data['username']); ?></h4>
-                    <p class="text-muted mb-2"><i class="fa fa-envelope me-2"></i><?php echo htmlspecialchars($user_data['email']); ?></p>
+                    <p class="text-muted text-break mb-2"><i class="fa fa-envelope me-2"></i><?php echo htmlspecialchars($user_data['email']); ?></p>
                     <p class="text-muted mb-0"><i class="fa fa-phone me-2"></i><?php echo !empty($user_data['phone']) ? htmlspecialchars($user_data['phone']) : 'Not Provided'; ?></p>
                 </div>
 

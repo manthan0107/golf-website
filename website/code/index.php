@@ -139,54 +139,49 @@
         <h3 class="service-title">OUR SERVICE </h3>
         <h2 class="service-title2">Our Best Services</h2>
       </div>
-      <div class="owl-carousel  owl-loaded mt-5 pt-2" id="service">
-        <div class="owl-stage-outer">
-          <div class="owl-stage">
-            <div class="owl-item">
-              <img src="../image/service-01.jpg" height="500px" width="360px" class="item-img" alt="">
-              <div class="ser-img-tex">
-                <h3 class="ser-tex1">Golf Coaching</h3>
-                <h5 class="ser-tex2">Best Ground</h5>
-              </div>
-            </div>
-            <div class="owl-item">
-              <img src="../image/service-02.jpg" height="500px" width="360px" class="item-img" alt="">
-              <div class="ser-img-tex">
-                <h3 class="ser-tex1">Special Service</h3>
-                <h5 class="ser-tex2">Best Trainers</h5>
-              </div>
-            </div>
-            <div class="owl-item">
-              <img src="../image/service-03.jpg" height="500px" width="360px" class="item-img" alt="">
-              <div class="ser-img-tex">
-                <h3 class="ser-tex1">Private Coaching</h3>
-                <h5 class="ser-tex2">Book Excerpt</h5>
-              </div>
-            </div>
-            <div class="owl-item">
-              <img src="../image/service-04.jpg" height="500px" width="360px" class="item-img" alt="">
-              <div class="ser-img-tex">
-                <h3 class="ser-tex1">Become A Member</h3>
-                <h5 class="ser-tex2">Best Ground</h5>
-              </div>
-            </div>
-            <div class="owl-item">
-              <img src="../image/service-05.jpg" height="500px" width="360px" class="item-img" alt="">
-              <div class="ser-img-tex">
-                <h3 class="ser-tex1">Host A Tournament</h3>
-                <h5 class="ser-tex2">Book Excerpt</h5>
-              </div>
-            </div>
-            <div class="owl-item">
-              <img src="../image/service-06.jpg" height="500px" width="360px" class="item-img" alt="">
-              <div class="ser-img-tex">
-                <h3 class="ser-tex1">Course Gide</h3>
-                <h5 class="ser-tex2">Best Trainers</h5>
-              </div>
-            </div>
+      <div class="owl-carousel mt-5 pt-2" id="service">
+        <div class="item">
+          <img src="../image/service-01.jpg" height="500px" width="360px" class="item-img" alt="">
+          <div class="ser-img-tex">
+            <h3 class="ser-tex1">Golf Coaching</h3>
+            <h5 class="ser-tex2">Best Ground</h5>
           </div>
         </div>
-
+        <div class="item">
+          <img src="../image/service-02.jpg" height="500px" width="360px" class="item-img" alt="">
+          <div class="ser-img-tex">
+            <h3 class="ser-tex1">Special Service</h3>
+            <h5 class="ser-tex2">Best Trainers</h5>
+          </div>
+        </div>
+        <div class="item">
+          <img src="../image/service-03.jpg" height="500px" width="360px" class="item-img" alt="">
+          <div class="ser-img-tex">
+            <h3 class="ser-tex1">Private Coaching</h3>
+            <h5 class="ser-tex2">Book Excerpt</h5>
+          </div>
+        </div>
+        <div class="item">
+          <img src="../image/service-04.jpg" height="500px" width="360px" class="item-img" alt="">
+          <div class="ser-img-tex">
+            <h3 class="ser-tex1">Become A Member</h3>
+            <h5 class="ser-tex2">Best Ground</h5>
+          </div>
+        </div>
+        <div class="item">
+          <img src="../image/service-05.jpg" height="500px" width="360px" class="item-img" alt="">
+          <div class="ser-img-tex">
+            <h3 class="ser-tex1">Host A Tournament</h3>
+            <h5 class="ser-tex2">Book Excerpt</h5>
+          </div>
+        </div>
+        <div class="item">
+          <img src="../image/service-06.jpg" height="500px" width="360px" class="item-img" alt="">
+          <div class="ser-img-tex">
+            <h3 class="ser-tex1">Course Gide</h3>
+            <h5 class="ser-tex2">Best Trainers</h5>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -213,13 +208,13 @@
 
   <!-- about  -->
 
-  <section class="container py-5">
+  <section class="container py-3 mt-4">
     <div class="row align-items-center">
       <!-- Left Column: Image -->
       <div class="col-lg-6 mb-4 mb-lg-0">
         <div class="about-image">
           <img src="../image/about-3.jpg" class="img-fluid rounded" alt="Golf Image" />
-          <div class="experience-box">
+          <div class="experience-box d-none d-md-block">
             <span>36+</span>
             Years of <br /> experience
           </div>
@@ -228,8 +223,8 @@
 
       <!-- Right Column: Text -->
       <div class="col-lg-6 about-text">
-        <h6 class="text-uppercase  fw-semibold mb-2 pt-5 pb-3" style="color: #caa850;">About Us</h6>
-        <h2 class="mb-4 text-dark pb-4">Improve your golf swing <br /> acquire a serious edge</h2>
+        <h6 class="text-uppercase fw-semibold mb-2 pt-2 pb-2" style="color: #caa850;">About Us</h6>
+        <h2 class="mb-3 text-dark pb-2">Improve your golf swing <br /> acquire a serious edge</h2>
         <p class="lead-border text-muted mb-4">
           It is a long established fact that a reader will be distracted by the readable content of a page when looking
           at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal.
@@ -399,9 +394,11 @@
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
   </section>
 
   <!-- price -->

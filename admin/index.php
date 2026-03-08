@@ -1,6 +1,11 @@
 <?php
 include "lib/db.php";
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: signin.php");
+    exit;
+}
+
 // Coaching Count
 $qry = "SELECT COUNT(id) AS total FROM coaching";     
 $result = mysqli_query($con, $qry);
