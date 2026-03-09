@@ -7,7 +7,15 @@ if (!isset($_SESSION['user_id'])) {
 
 require 'db.php';
 
-$user_email = $_SESSION['user_email'];
+$user_id = $_SESSION['user_id'];
+
+// Get user email securely
+$stmt_user = $con->prepare("SELECT email FROM register WHERE id = ?");
+$stmt_user->bind_param("i", $user_id);
+$stmt_user->execute();
+$user_res = $stmt_user->get_result()->fetch_assoc();
+$user_email = $user_res['email'];
+$stmt_user->close();
 
 // Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -26,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif ($type == 'coaching') {
         $name = $_POST['name'];
         $cno = $_POST['cno'];
-        $age = $_POST['age'];
+        $age = (int)$_POST['age'];
         $gender = $_POST['gender'];
         $level = $_POST['level'];
         $timeslot = $_POST['timeslot'];
@@ -40,11 +48,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $players = (int)$_POST['tplayers'];
         $date = $_POST['tdate'];
         $time = $_POST['ttime'];
-        $contact = (int)$_POST['tcontact'];
+        $contact = $_POST['tcontact'];
         $message = $_POST['tmessage'];
 
         $stmt = $con->prepare("UPDATE tee_time SET name=?, players=?, date=?, time=?, contact=?, message=? WHERE id=? AND email=?");
-        $stmt->bind_param("sissisis", $name, $players, $date, $time, $contact, $message, $id, $user_email);
+        $stmt->bind_param("sissssss", $name, $players, $date, $time, $contact, $message, $id, $user_email);
     }
     elseif ($type == 'team') {
         $name = $_POST['name'];
@@ -256,7 +264,7 @@ $stmt->close();
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <label class="form-label">Contact Number</label>
-                                <input type="number" class="form-control" name="tcontact" value="<?php echo htmlspecialchars($record['contact']); ?>" required>
+                                <input type="text" class="form-control" name="tcontact" value="<?php echo htmlspecialchars($record['contact']); ?>" required>
                             </div>
                         </div>
                         <div class="mb-4">

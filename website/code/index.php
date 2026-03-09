@@ -269,7 +269,7 @@
 
   <!-- team section start -->
   <section class="py-5">
-    <div class="container-fluid ">
+    <div class="container-fluid">
       <div class="text-center mb-5">
         <span class="section-title">Our Team</span>
         <h2 class="team-heading">Coaches and Instructors</h2>

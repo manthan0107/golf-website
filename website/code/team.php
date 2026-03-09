@@ -1,6 +1,11 @@
 <?php
 session_start();
     $alert = 0;
+    if (isset($_SESSION['alert'])) {
+        $alert = $_SESSION['alert'];
+        unset($_SESSION['alert']);
+    }
+    
     $con=mysqli_connect("localhost","root","","golfweb");
 
     if (isset($_POST['submit'])) {
@@ -13,25 +18,53 @@ session_start();
         $designation = $_POST['designation'];
         $gender = $_POST['gender'];
         $experience = (int)$_POST['experience'];
-        $user_id = $_SESSION['user_id'];
+        $email = trim($_POST['email']);
         
-        // Fetch current user email from database
-        $stmt_user = $con->prepare("SELECT email FROM register WHERE id = ?");
-        $stmt_user->bind_param("i", $user_id);
-        $stmt_user->execute();
-        $user_res = $stmt_user->get_result()->fetch_assoc();
-        $email = $user_res['email'];
-        $stmt_user->close();
-
-        $stmt = $con->prepare("INSERT INTO team (name, designation, gender, experience, email) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssis", $name, $designation, $gender, $experience, $email);
-
-        if ($stmt->execute()) {
-            $alert = 1; // success
+        // Email Validation
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $alert = 3;
         } else {
-            $alert = 2; // error
+            // Image Upload Handling
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['image']['tmp_name'];
+                $fileName = $_FILES['image']['name'];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                $allowedExts = array('jpg', 'jpeg', 'png');
+
+                if (in_array($fileExtension, $allowedExts)) {
+                    $uploadBaseDir = '../../uploads/team/';
+                    if (!is_dir($uploadBaseDir)) {
+                        mkdir($uploadBaseDir, 0777, true);
+                    }
+                    
+                    $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+                    $destPath = $uploadBaseDir . $newFileName;
+                    
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $imagePath = $destPath;
+
+                        $stmt = $con->prepare("INSERT INTO team (name, designation, gender, experience, email, image) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmt->bind_param("sssiss", $name, $designation, $gender, $experience, $email, $imagePath);
+
+                        if ($stmt->execute()) {
+                            $_SESSION['alert'] = 1; // success
+                            header("Location: team.php");
+                            exit;
+                        } else {
+                            $alert = 2; // error
+                        }
+                        $stmt->close();
+                    } else {
+                        $alert = 4; // Upload error
+                    }
+                } else {
+                    $alert = 5; // Invalid file type
+                }
+            } else {
+                $alert = 6; // Image not provided or error
+            }
         }
-        $stmt->close();
     }
 
     $sql = "SELECT name, designation, image FROM team";
@@ -88,6 +121,26 @@ session_start();
   <strong>Error!</strong> Failed to add team.
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>';
+     } elseif ($alert==3) {
+        echo '<div class="alert alert-danger alert-dismissible fade show container mt-4" role="alert">
+  <strong>Error!</strong> Invalid email format.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+     } elseif ($alert==4) {
+        echo '<div class="alert alert-danger alert-dismissible fade show container mt-4" role="alert">
+  <strong>Error!</strong> Failed to upload image.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+     } elseif ($alert==5) {
+        echo '<div class="alert alert-danger alert-dismissible fade show container mt-4" role="alert">
+  <strong>Error!</strong> Invalid file type. Only JPG, JPEG, and PNG are allowed.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+     } elseif ($alert==6) {
+        echo '<div class="alert alert-danger alert-dismissible fade show container mt-4" role="alert">
+  <strong>Error!</strong> Please select an image to upload.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
      }
      ?>
 
@@ -106,10 +159,16 @@ session_start();
                     $name = $row['name'];
                     $designation = $row['designation'];
                     $image = $row['image'];   // image file name saved in admin
+                    
+                    if (strpos($image, '/') !== false) {
+                        $displayImage = $image;
+                    } else {
+                        $displayImage = '../../admin/img/' . $image;
+                    }
             ?>
 
             <div class="col-sm-12 col-xs-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4 mt-4">
-                <div class="team-mem" style="background-image: url('../../admin/img/<?php echo $image; ?>'); background-size: cover; background-position: center;">
+                <div class="team-mem" style="background-image: url('<?php echo htmlspecialchars($displayImage); ?>'); background-size: cover; background-position: center;">
                     <div class="team-content">
                         <h6 class="team-role" style="color: rgb(255, 186, 101);">
                             <?php echo $designation; ?>
@@ -145,7 +204,7 @@ session_start();
 <section class="py-5 bg-light">
   <div class="container">
     <h2 class="fw-bold text-center mb-4">Register Your Team</h2>
-    <form class="p-4 shadow rounded bg-white" method="post">
+    <form class="p-4 shadow rounded bg-white" method="post" enctype="multipart/form-data">
       <div class="row">
         <div class="col-md-6 mb-3">
           <label class="form-label">Team Name</label>
@@ -168,6 +227,16 @@ session_start();
         <div class="col-md-6 mb-3">
           <label class="form-label">Experience (Years)</label>
           <input type="number" min="0" class="form-control" name="experience" placeholder="0" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Team Member Image</label>
+          <input type="file" class="form-control" name="image" accept=".jpg, .jpeg, .png" required>
         </div>
       </div>
       
