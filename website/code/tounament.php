@@ -21,23 +21,36 @@ $email = $user_res['email'];
 mysqli_stmt_close($stmt_user);
 
 $aleart=0;
+$errorMsg="";
+
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
 if(isset($_POST['submit']))
 {
-    $tname=$_POST['tname'];
-    $oname=$_POST['oname'];
-    $date=$_POST['date'];
-    $location=$_POST['location'];
-    $otherd=$_POST['otherd'];
+    $tname = sanitize($_POST['tname']);
+    $oname = sanitize($_POST['oname']);
+    $date = sanitize($_POST['date']);
+    $location = sanitize($_POST['location']);
+    $otherd = sanitize($_POST['otherd']);
 
-    $qry="INSERT INTO `tounament`(`id`, `tname`, `oname`, `date`, `location`, `email`, `otherd`) VALUES (null,'$tname','$oname','$date','$location','$email','$otherd')";
+    if(empty($tname) || empty($oname) || empty($date) || empty($location)) {
+        $errorMsg = "All fields except details are required.";
+    } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $oname)) {
+        $errorMsg = "Organizer Name must be at least 3 characters and contain only letters and spaces.";
+    } else {
+        $stmt = $con->prepare("INSERT INTO `tounament`(`tname`, `oname`, `date`, `location`, `email`, `otherd`) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $tname, $oname, $date, $location, $email, $otherd);
 
-      if(mysqli_query($con,$qry))
-      {
-        $aleart=1;
-      }
-
+        if($stmt->execute()) {
+            $aleart=1;
+        } else {
+            $errorMsg = "Database error: " . $stmt->error;
+        }
+        $stmt->close();
+    }
   }
-
 
 ?>
 
@@ -86,6 +99,12 @@ if(isset($_POST['submit']))
 </div>';
      }
      ?>
+     <?php if($errorMsg != ""): ?>
+        <div class="alert alert-danger alert-dismissible fade show container" role="alert">
+          <strong>Error!</strong> <?php echo $errorMsg; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+     <?php endif; ?>
     <section class="page-title-section">
 
         <div class="content">
@@ -103,33 +122,34 @@ if(isset($_POST['submit']))
 <section class="py-5">
   <div class="container">
     <h2 class="fw-bold text-center mb-4">Host a Golf Tournament</h2>
-    <form class="p-4 shadow rounded bg-light" method="post">
-      <div class="mb-3">
-        <label class="form-label">Tournament Name</label>
-        <input type="text" class="form-control" name="tname" placeholder="Enter Tournament Name" required>
+    <form id="tournamentForm" class="p-4 shadow rounded bg-light" method="post" onsubmit="return validateTournamentForm()">
+      <div class="mb-3 position-relative">
+        <label class="form-label">Tournament Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="tname" id="tnameid" placeholder="Enter Tournament Name" required onblur="Validator.validateRequired(this, 'Tournament Name')">
       </div>
-      <div class="mb-3">
-        <label class="form-label">Organizer Name</label>
-        <input type="text" class="form-control" name="oname" placeholder="Organizer Full Name" required>
+      <div class="mb-3 position-relative">
+        <label class="form-label">Organizer Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="oname" id="onameid" placeholder="Organizer Full Name" required onblur="Validator.validateName(this)">
       </div>
-      <div class="mb-3">
-        <label class="form-label">Date</label>
-        <input type="date" name="date" class="form-control" required>
+      <div class="mb-3 position-relative">
+        <label class="form-label">Date <span class="text-danger">*</span></label>
+        <input type="date" name="date" id="dateid" class="form-control" required onblur="Validator.validateRequired(this, 'Date')">
       </div>
-      <div class="mb-3">
-        <label class="form-label">Location</label>
-        <input type="text" name="location" class="form-control" placeholder="Tournament Location" required>
+      <div class="mb-3 position-relative">
+        <label class="form-label">Location <span class="text-danger">*</span></label>
+        <input type="text" name="location" id="locationid" class="form-control" placeholder="Tournament Location" required onblur="Validator.validateRequired(this, 'Location')">
       </div>
-      <div class="mb-3">
+      <div class="mb-3 position-relative">
         <label class="form-label">Contact Email</label>
        <input type="email"
 name="email"
+id="emailid"
 class="form-control"
 placeholder="Enter Email"
 value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
-required>
+required readonly onblur="Validator.validateEmail(this)">
       </div>
-      <div class="mb-3">
+      <div class="mb-3 position-relative">
         <label class="form-label">Additional Details</label>
         <textarea class="form-control" name="otherd" rows="4" placeholder="Provide details (optional)"></textarea>
       </div>
@@ -216,7 +236,18 @@ required>
         </div>
     </footer>
 
-
+    <script src="../js/validation.js"></script>
+    <script>
+        function validateTournamentForm() {
+            let isValid = true;
+            isValid = Validator.validateRequired(document.getElementById('tnameid'), 'Tournament Name') && isValid;
+            isValid = Validator.validateName(document.getElementById('onameid')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('dateid'), 'Date') && isValid;
+            isValid = Validator.validateRequired(document.getElementById('locationid'), 'Location') && isValid;
+            isValid = Validator.validateEmail(document.getElementById('emailid')) && isValid;
+            return isValid;
+        }
+    </script>
 </body>
 
 </html>

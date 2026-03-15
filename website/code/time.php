@@ -9,7 +9,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$conn=mysqli_connect("localhost","root","","golfweb");
+$conn = mysqli_connect("localhost", "root", "", "golfweb");
+
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
 
 // Fetch user email for insertion
 $user_id = $_SESSION['user_id'];
@@ -20,27 +24,36 @@ $user_res = mysqli_stmt_get_result($stmt_user)->fetch_assoc();
 $Email = $user_res['email'];
 mysqli_stmt_close($stmt_user);
 
-$aleart=0;
-if(isset($_POST['submit']))
-{
-    $Name=$_POST['tname'];
-    $Players=$_POST['tplayers'];
-    $Date=$_POST['tdate'];
-    $Time=$_POST['ttime'];
-    $Contact=$_POST['tcontact'];
-    $Message=$_POST['tmessage'];
-    
-    $Insert_query="INSERT INTO `tee_time`(`id`, `name`, `players`, `date`, `time`, `email`, `contact`, `message`) VALUES (null,'$Name','$Players','$Date','$Time','$Email','$Contact','$Message')";
+$aleart = 0;
+$errorMsg = "";
 
-        if(mysqli_query($conn,$Insert_query))
-        {
-            $aleart=1;
+if (isset($_POST['submit'])) {
+    $Name = sanitize($_POST['tname']);
+    $Players = sanitize($_POST['tplayers'] ?? '');
+    $Date = sanitize($_POST['tdate']);
+    $Time = sanitize($_POST['ttime']);
+    $Contact = sanitize($_POST['tcontact']);
+    $Message = sanitize($_POST['tmessage']);
+
+    // PHP Validation
+    if(empty($Name) || empty($Players) || empty($Date) || empty($Time) || empty($Contact) || empty($Message)) {
+         $errorMsg = "All fields are required.";
+    } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $Name)) {
+        $errorMsg = "Name must be at least 3 characters and contain only letters and spaces.";
+    } elseif(!preg_match("/^\d{10}$/", $Contact)) {
+        $errorMsg = "Contact number must be exactly 10 digits.";
+    } else {
+        $stmt = $conn->prepare("INSERT INTO `tee_time` (`name`, `players`, `date`, `time`, `email`, `contact`, `message`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssss", $Name, $Players, $Date, $Time, $Email, $Contact, $Message);
+        
+        if ($stmt->execute()) {
+            $aleart = 1;
+        } else {
+             $errorMsg = "Error: " . $stmt->error;
         }
-    
-    
+        $stmt->close();
+    }
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -555,6 +568,12 @@ if(isset($_POST['submit']))
 </div>';
      }
      ?>
+     <?php if($errorMsg != ""): ?>
+        <div class="alert alert-danger alert-dismissible fade show container" role="alert">
+          <strong>Error!</strong> <?php echo $errorMsg; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+     <?php endif; ?>
 
     <!-- ======Hero_Section==================== -->
     <div id="hero_section">
@@ -655,22 +674,21 @@ if(isset($_POST['submit']))
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-7 col-xxl-7 p-5 shadow rounded-end">
                     <div class="tee-form-div">
                         <!-- =======PHP Table Name :  -->
-                        <form method="post"  class="tee-form">
+                        <form id="timeForm" method="post" class="tee-form" onsubmit="return validateTimeForm()">
                             <div class="book_tee_txt d-flex align-items-center text-start">
                                 <h3 class="fw-semibold">BOOK A TEE TIME</h3>
                                 <div class="hrforrefresh mx-3"></div>
                             </div>
                             <div class="row">
                                 <!-- First Line field -->
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                                     <label for="nameid" class="my-2">Your Name</label>
-                                    <input type="text" id="nameid" name="tname" class="form-control" placeholder="First Name">
+                                    <input type="text" id="nameid" name="tname" class="form-control" placeholder="First Name" required onblur="Validator.validateName(this)">
                                 </div>
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                                     <label for="playerid" class="my-2">Players</label>
-                                    <!-- <input type="email" id="playerid" class="form-control"> -->
-                                    <select id="playerid" class="form-select" name="tplayers" required>
-                                        <option value="1" disabled selected>--Choose Your Player--</option>
+                                    <select id="playerid" class="form-select" name="tplayers" required onblur="Validator.validateRequired(this, 'Players')">
+                                        <option value="" disabled selected>--Choose Your Player--</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -678,16 +696,16 @@ if(isset($_POST['submit']))
                                     </select>
                                 </div>
                                 <!-- Second again Line field -->
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                                     <label for="dateid" class="my-2">Date</label>
-                                    <input type="date" id="dateid" name="tdate" class="form-control">
+                                    <input type="date" id="dateid" name="tdate" class="form-control" required onblur="Validator.validateRequired(this, 'Date')">
                                 </div>
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                                     <label for="timeid" class="my-2">Time</label>
-                                    <input type="time" id="timeid" name="ttime" class="form-control">
+                                    <input type="time" id="timeid" name="ttime" class="form-control" required onblur="Validator.validateRequired(this, 'Time')">
                                 </div>
                                 <!-- Second Line field -->
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                                     <label for="emailid" class="my-2">Your Email</label>
                                     <input type="email"
 id="emailid"
@@ -695,18 +713,18 @@ name="email"
 class="form-control"
 placeholder="name@example.com"
 value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
-required>
+required readonly onblur="Validator.validateEmail(this)">
                                 </div>
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                                     <label for="contactid" class="my-2">Contact Number</label>
                                     <input type="number" id="contactid" min="0" name="tcontact" class="form-control"
-                                        placeholder="Your Phone Number">
+                                        placeholder="Your Phone Number" required onblur="Validator.validatePhone(this)">
                                 </div>
                                 <!-- Third Line field -->
-                                <div class="col-12">
+                                <div class="col-12 position-relative mb-3">
                                     <label for="messageid" class="my-2">Message</label>
                                     <input type="text" id="messageid" name="tmessage" placeholder="Specify Any Other Requirement"
-                                        class="form-control">
+                                        class="form-control" required onblur="Validator.validateRequired(this, 'Message')">
                                 </div>
                                 <!-- Fourth Line field -->
                                 <div class="col-12">
@@ -875,6 +893,20 @@ required>
         </div>
     </footer>
 
+    <script src="../js/validation.js"></script>
+    <script>
+        function validateTimeForm() {
+            let isValid = true;
+            isValid = Validator.validateName(document.getElementById('nameid')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('playerid'), 'Players') && isValid;
+            isValid = Validator.validateRequired(document.getElementById('dateid'), 'Date') && isValid;
+            isValid = Validator.validateRequired(document.getElementById('timeid'), 'Time') && isValid;
+            isValid = Validator.validateEmail(document.getElementById('emailid')) && isValid;
+            isValid = Validator.validatePhone(document.getElementById('contactid')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('messageid'), 'Message') && isValid;
+            return isValid;
+        }
+    </script>
 </body>
 
 </html>

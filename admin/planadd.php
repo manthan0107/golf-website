@@ -1,27 +1,59 @@
 <?php
     include "lib/db.php";
+    
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
+    $errorMsg = "";
+    $successMsg = "";
 
     if(isset($_POST['submit']))
     {
-        $title=$_POST['title'];
-        $price=$_POST['price'];
-        $duration=$_POST['duration'];
+        $title = sanitize($_POST['title']);
+        $price = sanitize($_POST['price']);
+        $duration = sanitize($_POST['duration']);
+        $features = sanitize($_POST['features']);
         
-        $image=$_FILES['image']['name'];
-        $tmp_name=$_FILES['image']['tmp_name'];
-        $path='img/'.$image;
-        move_uploaded_file($tmp_name,$path);
+        if(empty($title) || empty($price) || empty($duration) || empty($features)) {
+             $errorMsg = "All fields except image are required.";
+        } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $title)) {
+             $errorMsg = "Title must be at least 3 characters and contain only letters and spaces.";
+        } else {
+             // Image validation
+            $uploadOk = 1;
+            $image = $_FILES['image']['name'];
+            $tmp_name = $_FILES['image']['tmp_name'];
+            $path = 'img/'.$image;
+            $imageFileType = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $allowed_types = ['jpg', 'jpeg', 'png'];
 
-        $features=$_POST['features'];
-
-        $stmt = $con->prepare("INSERT INTO `plan`(`id`, `title`, `price`, `duration`, `image`, `features`) VALUES (null, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $title, $price, $duration, $image, $features);
-        $stmt->execute();
-        $stmt->close();
+            if (!in_array($imageFileType, $allowed_types)) {
+                $errorMsg = "Sorry, only JPG, JPEG, & PNG files are allowed.";
+                $uploadOk = 0;
+            } elseif ($_FILES["image"]["size"] > 2 * 1024 * 1024) {
+                $errorMsg = "Image size exceeds 2MB limit.";
+                $uploadOk = 0;
+            }
+            
+            if($uploadOk == 1) {
+                if(move_uploaded_file($tmp_name, $path)) {
+                    $stmt = $con->prepare("INSERT INTO `plan`(`title`, `price`, `duration`, `image`, `features`) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->bind_param("sssss", $title, $price, $duration, $image, $features);
+                    
+                    if($stmt->execute()) {
+                         $successMsg = "Plan added successfully!";
+                    } else {
+                         $errorMsg = "Database Error: " . $stmt->error;
+                    }
+                    $stmt->close();
+                } else {
+                    $errorMsg = "Failed to upload image.";
+                }
+            }
+        }
     }
 ?>
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>G-Club - Bootstrap 5 Admin Template</title>
@@ -45,38 +77,44 @@
         <div class="content">
             <?php include "header.php"; ?>
             <div class="container-fluid pt-4 px-4">
+                <?php if($errorMsg != ""): ?>
+                    <div class="alert alert-danger px-3 py-2"><?php echo $errorMsg; ?></div>
+                <?php endif; ?>
+                <?php if($successMsg != ""): ?>
+                    <div class="alert alert-success px-3 py-2"><?php echo $successMsg; ?></div>
+                <?php endif; ?>
                 <div class="bg-secondary text-center rounded p-4">
                     <div class="container py-5">
                         <div class="card shadow p-4 border-0 bg-white">
                             <h3 class="mb-4 text-primary">➕ Add New Plan</h3>
-                            <form method="post" enctype="multipart/form-data">
+                            <form id="planAddForm" method="post" enctype="multipart/form-data" onsubmit="return validatePlanAdd()">
                                 <div class="row g-3">
                                     <!-- Title & Price -->
-                                    <div class="col-md-6 text-start">
+                                    <div class="col-md-6 text-start position-relative mb-2">
                                         <label class="form-label text-dark">Plan Title</label>
-                                        <input type="text" name="title" class="form-control bg-white text-dark border" placeholder="e.g. Silver Plan" required>
+                                        <input type="text" name="title" id="titleid" class="form-control bg-white text-dark border" placeholder="e.g. Silver Plan" required onblur="Validator.validateName(this)">
                                     </div>
-                                    <div class="col-md-6 text-start">
-                                        <label class="form-label text-dark">Price ($)</label>
-                                        <input type="number" name="price" class="form-control bg-white text-dark border" placeholder="e.g. 299" required>
+                                    <div class="col-md-6 text-start position-relative mb-2">
+                                        <label class="form-label text-dark">Price (₹)</label>
+                                        <input type="number" name="price" id="priceid" class="form-control bg-white text-dark border" placeholder="e.g. 299" required onblur="Validator.validateRequired(this, 'Price')">
                                     </div>
 
                                     <!-- Duration -->
-                                    <div class="col-md-6 text-start">
+                                    <div class="col-md-6 text-start position-relative mb-2">
                                         <label class="form-label text-dark">Duration</label>
-                                        <input type="text" name="duration" class="form-control bg-white text-dark border" placeholder="e.g. per month" required>
+                                        <input type="text" name="duration" id="durationid" class="form-control bg-white text-dark border" placeholder="e.g. per month" required onblur="Validator.validateRequired(this, 'Duration')">
                                     </div>
 
                                     <!-- Image -->
-                                    <div class="col-md-6 text-start">
+                                    <div class="col-md-6 text-start position-relative mb-2">
                                         <label class="form-label text-dark">Plan Icon</label>
-                                        <input type="file" name="image" class="form-control bg-white text-dark border" accept="image/*" required>
+                                        <input type="file" name="image" id="imageid" class="form-control bg-white text-dark border" accept="image/*" required onchange="Validator.validateImageUpload(this)">
                                     </div>
 
                                     <!-- Features -->
-                                    <div class="col-12 text-start">
+                                    <div class="col-12 text-start position-relative mb-2">
                                         <label class="form-label text-dark">Features (one per line)</label>
-                                        <textarea name="features" rows="5" class="form-control bg-white text-dark border" placeholder="e.g. 10 Premium Range Balls" required></textarea>
+                                        <textarea name="features" id="featuresid" rows="5" class="form-control bg-white text-dark border" placeholder="e.g. 10 Premium Range Balls" required onblur="Validator.validateRequired(this, 'Features')"></textarea>
                                     </div>
 
                                     <!-- Buttons -->
@@ -120,5 +158,17 @@
     <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="../website/js/validation.js"></script>
+    <script>
+        function validatePlanAdd() {
+            let isValid = true;
+            isValid = Validator.validateName(document.getElementById('titleid')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('priceid'), 'Price') && isValid;
+            isValid = Validator.validateRequired(document.getElementById('durationid'), 'Duration') && isValid;
+            isValid = Validator.validateImageUpload(document.getElementById('imageid')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('featuresid'), 'Features') && isValid;
+            return isValid;
+        }
+    </script>
 </body>
 </html>

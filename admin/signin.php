@@ -121,13 +121,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="alert alert-danger px-3 py-2"><?php echo htmlspecialchars($error); ?></div>
                         <?php endif; ?>
 
-                        <form method="POST" action="signin.php">
-                            <div class="form-floating mb-3">
-                                <input type="email" class="form-control" name="email" id="floatingInput" placeholder="name@example.com" required>
+                        <form id="adminSignInForm" method="POST" action="signin.php" onsubmit="return validateAdminSignIn()">
+                            <div class="form-floating mb-3 position-relative">
+                                <input type="email" class="form-control" name="email" id="floatingInput" placeholder="name@example.com" required onblur="Validator.validateEmail(this)">
                                 <label for="floatingInput">Email address</label>
                             </div>
                             <div class="form-floating mb-4 position-relative">
-                                <input type="password" class="form-control pe-5" name="password" id="floatingPassword" placeholder="Password" required>
+                                <input type="password" class="form-control pe-5" name="password" id="floatingPassword" placeholder="Password" required onblur="Validator.validatePassword(this)">
                                 <label for="floatingPassword">Password</label>
                                 <span class="position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" style="cursor: pointer;" onclick="togglePasswordVisibility('floatingPassword', this)">
                                     <i class="fa fa-eye"></i>
@@ -164,6 +164,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script src="../website/js/validation.js"></script>
     <script>
         function togglePasswordVisibility(inputId, iconSpan) {
             const input = document.getElementById(inputId);
@@ -177,6 +178,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
+        }
+
+        function validateAdminSignIn() {
+            let isValid = true;
+            isValid = Validator.validateEmail(document.getElementById('floatingInput')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('floatingPassword'), 'Password') && isValid;
+            return isValid;
         }
     </script>
 </body>

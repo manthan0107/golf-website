@@ -1,24 +1,42 @@
 <?php
 session_start();
 $aleart=0;
+$errorMsg="";
 $conn=mysqli_connect("localhost","root","","golfweb");
-if(isset($_POST['submit']))
-{
-    $Name=$_POST['cname'];
-    $Email=$_POST['cemail'];
-    $Subject=$_POST['csubject'];
-    $Contact=$_POST['ccontact'];
-    $Message=$_POST['cmessage'];
 
-
-    $Insert_query="INSERT INTO `contact`(`id`, `name`, `email`, `subject`, `contact`, `message`) VALUES (null,'$Name','$Email','$Subject','$Contact','$Message')";
-    if(mysqli_query($conn,$Insert_query))
-    {
-        $aleart=1;
-    }
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
 }
 
+if(isset($_POST['submit']))
+{
+    $Name = sanitize($_POST['cname']);
+    $Email = sanitize($_POST['cemail']);
+    $Subject = sanitize($_POST['csubject']);
+    $Contact = sanitize($_POST['ccontact']);
+    $Message = sanitize($_POST['cmessage']);
 
+    // PHP Validation
+    if(empty($Name) || empty($Email) || empty($Subject) || empty($Contact) || empty($Message)) {
+        $errorMsg = "All fields are required.";
+    } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $Name)) {
+        $errorMsg = "Name must be at least 3 characters and contain only letters and spaces.";
+    } elseif(!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
+        $errorMsg = "Please enter a valid email address.";
+    } elseif(!preg_match("/^\d{10}$/", $Contact)) {
+        $errorMsg = "Contact number must be exactly 10 digits.";
+    } else {
+        $stmt = $conn->prepare("INSERT INTO `contact` (`name`, `email`, `subject`, `contact`, `message`) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $Name, $Email, $Subject, $Contact, $Message);
+        
+        if($stmt->execute()) {
+            $aleart = 1;
+        } else {
+            $errorMsg = "Error: " . $stmt->error;
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 
@@ -409,8 +427,7 @@ if(isset($_POST['submit']))
 
 <?php include 'header.php'; ?>
     <!-- ===Aleart using PHP -->
-     <?php
-     
+     <?php     
      if($aleart==1)
      {
         echo '<div class="alert alert-success alert-dismissible fade show container" role="alert">
@@ -419,6 +436,12 @@ if(isset($_POST['submit']))
 </div>';
      }
      ?>
+     <?php if($errorMsg != ""): ?>
+        <div class="alert alert-danger alert-dismissible fade show container" role="alert">
+          <strong>Error!</strong> <?php echo $errorMsg; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+     <?php endif; ?>
     <!-- ======Hero_Section==================== -->
     <div id="hero_section">
         <!-- ---Fixed Icon  -->
@@ -515,7 +538,7 @@ if(isset($_POST['submit']))
     <!-- ======Get In Touch ***Form***..-------==================== -->
     <div id="Get_in_section">
         <div class=" container form-container">
-            <form  method="post" class="get-in-form rounded-3 shadow-lg">
+            <form id="contactForm" method="post" class="get-in-form rounded-3 shadow-lg" onsubmit="return validateContactForm()">
                 <div class="row">
                     <div class="col-12">
                         <div class="form-txt-div">
@@ -531,27 +554,27 @@ if(isset($_POST['submit']))
                 </div>
                 <div class="row">
                     <!-- First Line field -->
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                         <label for="nameid" class="my-2">Your Name</label>
-                        <input type="text" id="nameid" name="cname" class="form-control">
+                        <input type="text" id="nameid" name="cname" class="form-control" required onblur="Validator.validateName(this)">
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                         <label for="emailid" class="my-2">Your Email</label>
-                        <input type="email" id="emailid" name="cemail" class="form-control">
+                        <input type="email" id="emailid" name="cemail" class="form-control" required onblur="Validator.validateEmail(this)">
                     </div>
                     <!-- Second Line field -->
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                         <label for="subjectid" class="my-2">Your Subject</label>
-                        <input type="text" id="subjectid" name="csubject" class="form-control">
+                        <input type="text" id="subjectid" name="csubject" class="form-control" required onblur="Validator.validateRequired(this, 'Subject')">
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 position-relative mb-3">
                         <label for="contactid" class="my-2">Contact Number</label>
-                        <input type="number" id="contactid" min="0" name="ccontact" class="form-control">
+                        <input type="number" id="contactid" min="0" name="ccontact" class="form-control" required onblur="Validator.validatePhone(this)">
                     </div>
                     <!-- Third Line field -->   
-                    <div class="col-12">
+                    <div class="col-12 position-relative mb-3">
                         <label for="messageid" class="my-2">Message</label>
-                        <input type="text" id="messageid" name="cmessage" class="form-control">
+                        <input type="text" id="messageid" name="cmessage" class="form-control" required onblur="Validator.validateRequired(this, 'Message')">
                     </div>
                     <!-- Fourth Line field -->
                     <div class="col-12">
@@ -635,6 +658,18 @@ if(isset($_POST['submit']))
     </div>
   </footer>
 
+  <script src="../js/validation.js"></script>
+  <script>
+    function validateContactForm() {
+        let isValid = true;
+        isValid = Validator.validateName(document.getElementById('nameid')) && isValid;
+        isValid = Validator.validateEmail(document.getElementById('emailid')) && isValid;
+        isValid = Validator.validateRequired(document.getElementById('subjectid'), 'Subject') && isValid;
+        isValid = Validator.validatePhone(document.getElementById('contactid')) && isValid;
+        isValid = Validator.validateRequired(document.getElementById('messageid'), 'Message') && isValid;
+        return isValid;
+    }
+  </script>
 </body>
 
 </html>

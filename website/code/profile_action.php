@@ -21,18 +21,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        $username = $_POST['username'];
-        $phone = $_POST['phone'];
+        $username = trim($_POST['username']);
+        $phone = trim($_POST['phone']);
+        
+        // PHP validation
+        if(empty($username) || empty($phone)) {
+            $_SESSION['msg'] = "All fields except image are required.";
+            $_SESSION['msg_type'] = "danger";
+            header("Location: profile.php");
+            exit;
+        } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $username)) {
+            $_SESSION['msg'] = "Name must be at least 3 characters and contain only letters and spaces.";
+            $_SESSION['msg_type'] = "danger";
+            header("Location: profile.php");
+            exit;
+        } elseif(!preg_match("/^\d{10}$/", $phone)) {
+            $_SESSION['msg'] = "Phone number must be exactly 10 digits.";
+            $_SESSION['msg_type'] = "danger";
+            header("Location: profile.php");
+            exit;
+        }
         
         // Check if an image was uploaded
         $update_image = false;
         $image_name = '';
 
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
-            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-            $file_type = $_FILES['profile_image']['type'];
+            $allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
+            $file_type = mime_content_type($_FILES['profile_image']['tmp_name']);
+            $file_size = $_FILES['profile_image']['size'];
             
-            if (in_array($file_type, $allowed_types)) {
+            if (!in_array($file_type, $allowed_types) || !in_array($_FILES['profile_image']['type'], $allowed_types)) {
+                $_SESSION['msg'] = "Invalid image format. Only JPG, JPEG and PNG are allowed.";
+                $_SESSION['msg_type'] = "danger";
+                header("Location: profile.php");
+                exit;
+            } elseif ($file_size > 2 * 1024 * 1024) { // 2MB max size
+                $_SESSION['msg'] = "Image size exceeds 2MB limit.";
+                $_SESSION['msg_type'] = "danger";
+                header("Location: profile.php");
+                exit;
+            } else {
                 $ext = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
                 $image_name = 'user_' . $user_id . '_' . time() . '.' . $ext;
                 $target_dir = "../image/uploads/";
@@ -48,9 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['msg'] = "Failed to upload image.";
                     $_SESSION['msg_type'] = "danger";
                 }
-            } else {
-                $_SESSION['msg'] = "Invalid image format. Only JPG, PNG, and GIF are allowed.";
-                $_SESSION['msg_type'] = "danger";
             }
         }
         

@@ -10,7 +10,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
   $aleart=0;
+  $errorMsg="";
   $con=mysqli_connect("localhost","root","","golfweb");
+
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
 
   // Fetch user email for insertion
   $user_id = $_SESSION['user_id'];
@@ -23,21 +28,32 @@ if (!isset($_SESSION['user_id'])) {
 
   if(isset($_POST['submit']))
   {
-    $name=$_POST['name'];
-    $cno=$_POST['cno'];
-    $age=$_POST['age'];
-    $gender=$_POST['gender'];
-    $level=$_POST['level'];
-    $timeslot=$_POST['timeslot'];
-    $message=$_POST['message'];
+    $name = sanitize($_POST['name']);
+    $cno = sanitize($_POST['cno']);
+    $age = sanitize($_POST['age']);
+    $gender = sanitize($_POST['gender'] ?? '');
+    $level = sanitize($_POST['level'] ?? '');
+    $timeslot = sanitize($_POST['timeslot'] ?? '');
+    $message = sanitize($_POST['message']);
 
-    $qry="INSERT INTO `coaching`(`id`, `name`, `email`, `cno`, `age`, `gender`, `level`, `timeslot`, `message`) VALUES (null,'$name','$email','$cno','$age','$gender','$level','$timeslot','$message')";
-
-    if(mysqli_query($con,$qry))
-    {
-      $aleart=1;
+    // PHP Validation
+    if(empty($name) || empty($cno) || empty($age) || empty($gender) || empty($level) || empty($timeslot) || empty($message)) {
+         $errorMsg = "All fields are required.";
+    } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $name)) {
+        $errorMsg = "Name must be at least 3 characters and contain only letters and spaces.";
+    } elseif(!preg_match("/^\d{10}$/", $cno)) {
+        $errorMsg = "Contact number must be exactly 10 digits.";
+    } else {
+        $stmt = $con->prepare("INSERT INTO `coaching` (`name`, `email`, `cno`, `age`, `gender`, `level`, `timeslot`, `message`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssss", $name, $email, $cno, $age, $gender, $level, $timeslot, $message);
+        
+        if ($stmt->execute()) {
+            $aleart = 1;
+        } else {
+             $errorMsg = "Error: " . $stmt->error;
+        }
+        $stmt->close();
     }
-
   }
 ?>
 <!DOCTYPE html>
@@ -127,6 +143,12 @@ if (!isset($_SESSION['user_id'])) {
 </div>';
      }
      ?>
+     <?php if($errorMsg != ""): ?>
+        <div class="alert alert-danger alert-dismissible fade show container" role="alert">
+          <strong>Error!</strong> <?php echo $errorMsg; ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+     <?php endif; ?>
 <!-- hero section -->
 
  <section class="page-title-section">
@@ -160,60 +182,61 @@ if (!isset($_SESSION['user_id'])) {
             <!-- Right Form -->
             <div class="col-lg-7">
                 <div class="form-card">
-                    <form method="post" >
+                    <form id="coachingForm" method="post" onsubmit="return validateCoachingForm()">
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 position-relative">
                                 <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="name" placeholder="Enter your full name" required>
+                                <input type="text" class="form-control" name="name" id="nameid" placeholder="Enter your full name" required onblur="Validator.validateName(this)">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 position-relative">
                                 <label class="form-label">Email Address <span class="text-danger">*</span></label>
                                <input type="email"
 class="form-control"
 name="email"
+id="emailid"
 placeholder="Enter your email"
 value="<?php echo htmlspecialchars(isset($_SESSION['user_email']) ? $_SESSION['user_email'] : ''); ?>"
-required>
+required readonly onblur="Validator.validateEmail(this)">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 position-relative">
                                 <label class="form-label">Contact Number <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" min="0" name="cno" placeholder="Enter your phone number" required>
+                                <input type="number" class="form-control" min="0" name="cno" id="contactid" placeholder="Enter your phone number" required onblur="Validator.validatePhone(this)">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-3 position-relative">
                                 <label class="form-label">Age <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" min="0" name="age" placeholder="Your age" required>
+                                <input type="number" class="form-control" min="0" name="age" id="ageid" placeholder="Your age" required onblur="Validator.validateRequired(this, 'Age')">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mb-3 position-relative">
                                 <label class="form-label">Gender</label>
-                                <select class="form-select" name="gender">
-                                    <option selected disabled>Select</option>
+                                <select class="form-select" name="gender" id="genderid" required onblur="Validator.validateRequired(this, 'Gender')">
+                                    <option value="" selected disabled>Select</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                     <option value="other">Other</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 position-relative">
                                 <label class="form-label">Skill Level</label>
-                                <select class="form-select" name="level">
-                                    <option selected disabled>Select your skill level</option>
+                                <select class="form-select" name="level" id="levelid" required onblur="Validator.validateRequired(this, 'Skill Level')">
+                                    <option value="" selected disabled>Select your skill level</option>
                                     <option value="Beginner">Beginner</option>
                                     <option value="Intermediate">Intermediate</option>
                                     <option value="Advanced">Advanced</option>
                                 </select>
                             </div>
                            
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3 position-relative">
                                 <label class="form-label">Preferred Time Slot</label>
-                                <select class="form-select" name="timeslot">
-                                    <option selected disabled>Select time slot</option>
+                                <select class="form-select" name="timeslot" id="timeslotid" required onblur="Validator.validateRequired(this, 'Time Slot')">
+                                    <option value="" selected disabled>Select time slot</option>
                                     <option value="Morning">Morning</option>
                                     <option value="Afternoon">Afternoon</option>
                                     <option value="Evening">Evening</option>
                                 </select>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 mb-3 position-relative">
                                 <label class="form-label">Message / Additional Info</label>
-                                <textarea class="form-control" rows="4" name="message" placeholder="Tell us more"></textarea>
+                                <textarea class="form-control" rows="4" name="message" id="messageid" placeholder="Tell us more" required onblur="Validator.validateRequired(this, 'Message')"></textarea>
                             </div>
                          
                             <div class="col-12">
@@ -311,5 +334,19 @@ required>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
   integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw=="
   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="../js/slide.js"></script>
+<script src="../js/validation.js"></script>
+<script>
+    function validateCoachingForm() {
+        let isValid = true;
+        isValid = Validator.validateName(document.getElementById('nameid')) && isValid;
+        isValid = Validator.validateEmail(document.getElementById('emailid')) && isValid;
+        isValid = Validator.validatePhone(document.getElementById('contactid')) && isValid;
+        isValid = Validator.validateRequired(document.getElementById('ageid'), 'Age') && isValid;
+        isValid = Validator.validateRequired(document.getElementById('genderid'), 'Gender') && isValid;
+        isValid = Validator.validateRequired(document.getElementById('levelid'), 'Skill Level') && isValid;
+        isValid = Validator.validateRequired(document.getElementById('timeslotid'), 'Time Slot') && isValid;
+        isValid = Validator.validateRequired(document.getElementById('messageid'), 'Message') && isValid;
+        return isValid;
+    }
+</script>
 </html>

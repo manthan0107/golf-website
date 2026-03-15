@@ -5,111 +5,123 @@ include 'db.php';
 $error = "";
 $success = "";
 
+// Helper to sanitize inputs
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
 // Handle Form Submissions
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // --- SIGNUP LOGIC ---
     if (isset($_POST['action']) && $_POST['action'] == 'signup') {
-        $username = $_POST['username'];
-        $email    = $_POST['email'];
-        $password = $_POST['password'];
+        $username = sanitize($_POST['username']);
+        $email    = sanitize($_POST['email']);
+        $password = $_POST['password']; // Don't sanitize password, but do validate
 
-        // Hash the password
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        // Check if email already exists
-        $stmt = $con->prepare("SELECT email FROM register WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows > 0) {
-            $error = "Email already registered. Please login.";
-            $stmt->close();
+        // Validation Rules
+        if (!preg_match("/^[A-Za-z\s]{3,}$/", $username)) {
+            $error = "Name must be at least 3 characters and contain only letters and spaces.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Please enter a valid email address.";
+        } elseif (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/", $password)) {
+            $error = "Password must be at least 6 characters and contain at least one letter and one number.";
         } else {
-            $stmt->close();
-            // Insert new user
-            $stmt = $con->prepare("INSERT INTO `register`(`username`, `email`, `password`) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $username, $email, $hashed_password);
+            // Hash the password securely
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            if ($stmt->execute()) {
-                $success = "Account created successfully! Please Sign In.";
+            // Check if email already exists
+            $stmt = $con->prepare("SELECT email FROM register WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                $error = "Email already registered. Please login.";
+                $stmt->close();
             } else {
-                $error = "Error: " . $stmt->error;
+                $stmt->close();
+                // Insert new user
+                $stmt = $con->prepare("INSERT INTO `register`(`username`, `email`, `password`) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+                if ($stmt->execute()) {
+                    $success = "Account created successfully! Please Sign In.";
+                } else {
+                    $error = "Error: " . $stmt->error;
+                }
+                $stmt->close();
             }
-            $stmt->close();
         }
     }
     
     // --- LOGIN LOGIC ---
     elseif (isset($_POST['action']) && $_POST['action'] == 'login') {
 
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+        $email = sanitize($_POST['email']);
+        $password = $_POST['password'];
 
-    // 1️⃣ Fetch admin by email
-$stmt_admin = $con->prepare("SELECT * FROM signup WHERE email=?");
-$stmt_admin->bind_param("s", $email);
-$stmt_admin->execute();
-$result_admin = $stmt_admin->get_result();
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Please enter a valid email address.";
+        } elseif (empty($password)) {
+            $error = "Password is required.";
+        } else {
+            // 1️⃣ Fetch admin by email
+            $stmt_admin = $con->prepare("SELECT * FROM signup WHERE email=?");
+            $stmt_admin->bind_param("s", $email);
+            $stmt_admin->execute();
+            $result_admin = $stmt_admin->get_result();
 
-if ($result_admin->num_rows > 0) {
+            if ($result_admin->num_rows > 0) {
+                $row_admin = $result_admin->fetch_assoc();
 
-    $row_admin = $result_admin->fetch_assoc();
+                // 2️⃣ Verify password in PHP
+                if (
+                    password_verify($password, $row_admin['password']) ||
+                    md5($password) == $row_admin['password'] ||
+                    $password == $row_admin['password']
+                ) {
+                    $_SESSION['user_id'] = $row_admin['id'];
+                    $_SESSION['username'] = $row_admin['username'];
+                    $_SESSION['user_email'] = $row_admin['email'];
+                    $_SESSION['phone'] = $row_admin['phone'];
+                    $_SESSION['is_admin'] = true;
 
-    // 2️⃣ Verify password in PHP
-    if (
-    password_verify($password, $row_admin['password']) ||
-    md5($password) == $row_admin['password'] ||
-    $password == $row_admin['password']
-) {
+                    if (!empty($row_admin['image'])) {
+                        $_SESSION['admin_image'] = $row_admin['image'];
+                    } else {
+                        $_SESSION['admin_image'] = "user.jpg";
+                    }
 
-        $_SESSION['user_id'] = $row_admin['id'];
-$_SESSION['username'] = $row_admin['username'];
-$_SESSION['user_email'] = $row_admin['email'];
-$_SESSION['phone'] = $row_admin['phone'];
-$_SESSION['is_admin'] = true;
+                    header("Location: ../../admin/index.php");
+                    exit;
+                }
+            }
+            $stmt_admin->close();
 
-if (!empty($row_admin['image'])) {
-    $_SESSION['admin_image'] = $row_admin['image'];
-} else {
-    $_SESSION['admin_image'] = "user.jpg";
-}
+            // 2️⃣ Check Normal User
+            $stmt = $con->prepare("SELECT * FROM register WHERE email=?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        header("Location: ../../admin/index.php");
-        exit;
-    }
-}
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
 
-$stmt_admin->close();
+                if (password_verify($password, $row['password'])) {
+                    $_SESSION['user_id'] = $row['id'];
+                    $_SESSION['username'] = $row['username'];
+                    $_SESSION['user_email'] = $row['email'];
 
-    // 2️⃣ Check Normal User
-    $stmt = $con->prepare("SELECT * FROM register WHERE email=?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-
-        $row = $result->fetch_assoc();
-
-        if (password_verify($password, $row['password'])) {
-
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['user_email'] = $row['email'];
-
-            header("Location: index.php");
-            exit;
+                    header("Location: index.php");
+                    exit;
+                }
+            }
+            $stmt->close();
+            $error = "Invalid Email or Password!";
         }
     }
-
-    $stmt->close();
-
-    $error = "Invalid Email or Password!";
 }
-    }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -343,15 +355,15 @@ $stmt_admin->close();
 
         <!-- LOGIN FORM -->
         <div class="form-section" id="formLogin">
-            <form method="POST" action="">
+            <form id="loginForm" method="POST" action="" onsubmit="return validateLogin()">
                 <input type="hidden" name="action" value="login">
                 
                 <div class="mb-3">
-                    <input type="email" class="form-control" name="email" placeholder="Email address" required>
+                    <input type="email" class="form-control" id="loginEmail" name="email" placeholder="Email address" required onblur="Validator.validateEmail(this)">
                 </div>
 
                 <div class="mb-3">
-                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                    <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Password" required onblur="Validator.validateRequired(this, 'Password')">
                 </div>
 
                 <button type="submit" class="btn btn-green">Login</button>
@@ -365,19 +377,19 @@ $stmt_admin->close();
 
         <!-- SIGN UP FORM -->
         <div class="form-section" id="formSignUp">
-            <form method="POST" action="">
+            <form id="signupForm" method="POST" action="" onsubmit="return validateSignup()">
                 <input type="hidden" name="action" value="signup">
                 
                 <div class="mb-3">
-                    <input type="text" class="form-control" name="username" placeholder="Full Name" required>
+                    <input type="text" class="form-control" id="signupUsername" name="username" placeholder="Full Name" required onblur="Validator.validateName(this)">
                 </div>
 
                 <div class="mb-3">
-                    <input type="email" class="form-control" name="email" placeholder="Email address" required>
+                    <input type="email" class="form-control" id="signupEmail" name="email" placeholder="Email address" required onblur="Validator.validateEmail(this)">
                 </div>
 
                 <div class="mb-3">
-                    <input type="password" class="form-control" name="password" placeholder="Password" required>
+                    <input type="password" class="form-control" id="signupPassword" name="password" placeholder="Password" required onblur="Validator.validatePassword(this)">
                 </div>
 
                 <button type="submit" class="btn btn-green">Sign Up</button>
@@ -389,7 +401,23 @@ $stmt_admin->close();
         </div>
     </div>
 
+    <script src="../js/validation.js"></script>
     <script>
+        function validateLogin() {
+            let isValid = true;
+            isValid = Validator.validateEmail(document.getElementById('loginEmail')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('loginPassword'), 'Password') && isValid;
+            return isValid;
+        }
+
+        function validateSignup() {
+            let isValid = true;
+            isValid = Validator.validateName(document.getElementById('signupUsername')) && isValid;
+            isValid = Validator.validateEmail(document.getElementById('signupEmail')) && isValid;
+            isValid = Validator.validatePassword(document.getElementById('signupPassword')) && isValid;
+            return isValid;
+        }
+
         const container = document.getElementById('toggleContainer');
         const labelSignUp = document.getElementById('labelSignUp');
         const labelSignIn = document.getElementById('labelSignIn');

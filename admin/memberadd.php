@@ -1,23 +1,58 @@
 <?php
     include "lib/db.php";
+    
+function sanitize($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
+
+    $errorMsg = "";
+    $successMsg = "";
 
     if(isset($_POST['submit']))
     {
-        $name=$_POST['name'];
-        $designation=$_POST['designation'];
-        $gender=$_POST['gender'];
-        $experience=$_POST['experience'];
-        $image=$_FILES['image']['name'];
-        $tmp_name=$_FILES['image']['tmp_name'];
-        $path='img/'.$image;
-        move_uploaded_file($tmp_name,$path);
-
-        // Ideally use prepared statements here too for security
-        $stmt = $con->prepare("INSERT INTO `team`(`id`, `name`, `designation`, `gender`, `experience`,`image`) VALUES (null, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $name, $designation, $gender, $experience, $image);
-        $stmt->execute();
-        $stmt->close();
+        $name = sanitize($_POST['name']);
+        $designation = sanitize($_POST['designation']);
+        $gender = sanitize($_POST['gender']);
+        $experience = sanitize($_POST['experience']);
         
+        // PHP validation
+        if(empty($name) || empty($designation) || empty($gender) || empty($experience)) {
+             $errorMsg = "All fields except image are required.";
+        } elseif(!preg_match("/^[A-Za-z\s]{3,}$/", $name)) {
+             $errorMsg = "Name must be at least 3 characters and contain only letters and spaces.";
+        } else {
+            // Image validation
+            $uploadOk = 1;
+            $image = $_FILES['image']['name'];
+            $tmp_name = $_FILES['image']['tmp_name'];
+            $path = 'img/'.$image;
+            $imageFileType = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $allowed_types = ['jpg', 'jpeg', 'png'];
+
+            if (!in_array($imageFileType, $allowed_types)) {
+                $errorMsg = "Sorry, only JPG, JPEG, & PNG files are allowed.";
+                $uploadOk = 0;
+            } elseif ($_FILES["image"]["size"] > 2 * 1024 * 1024) {
+                $errorMsg = "Image size exceeds 2MB limit.";
+                $uploadOk = 0;
+            }
+
+            if ($uploadOk == 1) {
+                if(move_uploaded_file($tmp_name, $path)) {
+                    $stmt = $con->prepare("INSERT INTO `team`(`name`, `designation`, `gender`, `experience`,`image`) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->bind_param("sssss", $name, $designation, $gender, $experience, $image);
+                    
+                    if($stmt->execute()) {
+                        $successMsg = "Member added successfully!";
+                    } else {
+                        $errorMsg = "Database Error: " . $stmt->error;
+                    }
+                    $stmt->close();
+                } else {
+                    $errorMsg = "Failed to upload image.";
+                }
+            }
+        }
     }
 ?>
 <!DOCTYPE html>
@@ -63,27 +98,33 @@
             <?php include "header.php"; ?>
 
             <div class="container-fluid pt-4 px-4">
+                <?php if($errorMsg != ""): ?>
+                    <div class="alert alert-danger px-3 py-2"><?php echo $errorMsg; ?></div>
+                <?php endif; ?>
+                <?php if($successMsg != ""): ?>
+                    <div class="alert alert-success px-3 py-2"><?php echo $successMsg; ?></div>
+                <?php endif; ?>
                 <div class="bg-secondary text-center rounded p-4">
                     
                     <div class="container py-5 w-50">
                          <div class="card shadow p-4 border-0 bg-white">
                             <h3 class="mb-4 text-primary">➕ Add Team Member</h3>
-                            <form method="post" enctype="multipart/form-data">
+                            <form id="memberAddForm" method="post" enctype="multipart/form-data" onsubmit="return validateMemberAdd()">
                               <div class="row g-3">
                                 <!-- Name & Designation -->
-                                <div class="col-md-12 text-start">
+                                <div class="col-md-12 text-start position-relative mb-2">
                                   <label class="form-label text-dark">Full Name</label>
-                                  <input type="text" name="name" class="form-control bg-white text-dark border" required>
+                                  <input type="text" name="name" id="nameid" class="form-control bg-white text-dark border" required onblur="Validator.validateName(this)">
                                 </div>
-                                <div class="col-md-12 text-start">
+                                <div class="col-md-12 text-start position-relative mb-2">
                                   <label class="form-label text-dark">Designation</label>
-                                  <input type="text" name="designation" class="form-control bg-white text-dark border" required>
+                                  <input type="text" name="designation" id="designationid" class="form-control bg-white text-dark border" required onblur="Validator.validateRequired(this, 'Designation')">
                                 </div>
 
                                 <!-- Gender -->
-                                <div class="col-md-12 text-start">
+                                <div class="col-md-12 text-start position-relative mb-2">
                                   <label class="form-label text-dark">Gender</label>
-                                  <select name="gender" class="form-select bg-white text-dark border" required>
+                                  <select name="gender" id="genderid" class="form-select bg-white text-dark border" required onblur="Validator.validateRequired(this, 'Gender')">
                                     <option value="">-- Select Gender --</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
@@ -91,15 +132,15 @@
                                   </select>
                                 </div>
 
-                                <div class="col-md-12 text-start">
+                                <div class="col-md-12 text-start position-relative mb-2">
                                   <label class="form-label text-dark">Experience</label>
-                                  <input type="text" name="experience" class="form-control bg-white text-dark border" required>
+                                  <input type="text" name="experience" id="experienceid" class="form-control bg-white text-dark border" required onblur="Validator.validateRequired(this, 'Experience')">
                                 </div>
 
                                 <!-- Profile Image -->
-                                <div class="col-md-12 text-start">
+                                <div class="col-md-12 text-start position-relative mb-2">
                                   <label class="form-label text-dark">Profile Image</label>
-                                  <input type="file" name="image" class="form-control bg-white text-dark border" accept="image/*" required>
+                                  <input type="file" name="image" id="imageid" class="form-control bg-white text-dark border" accept="image/*" required onchange="Validator.validateImageUpload(this)">
                                 </div>
 
                                 <!-- Buttons -->
@@ -148,5 +189,17 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script src="../website/js/validation.js"></script>
+    <script>
+        function validateMemberAdd() {
+            let isValid = true;
+            isValid = Validator.validateName(document.getElementById('nameid')) && isValid;
+            isValid = Validator.validateRequired(document.getElementById('designationid'), 'Designation') && isValid;
+            isValid = Validator.validateRequired(document.getElementById('genderid'), 'Gender') && isValid;
+            isValid = Validator.validateRequired(document.getElementById('experienceid'), 'Experience') && isValid;
+            isValid = Validator.validateImageUpload(document.getElementById('imageid')) && isValid;
+            return isValid;
+        }
+    </script>
 </body>
 </html>

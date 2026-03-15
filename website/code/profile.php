@@ -232,30 +232,30 @@ $stmt->close();
                     <!-- Profile Tab -->
                     <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                         <h4 class="mb-4">Update Profile Information</h4>
-                        <form action="profile_action.php" method="POST" enctype="multipart/form-data">
+                        <form id="profileForm" action="profile_action.php" method="POST" enctype="multipart/form-data" onsubmit="return validateProfileForm()">
                             <input type="hidden" name="action" value="update_profile">
                             <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
                             
                             <div class="row mb-3">
-                                <div class="col-md-6">
+                                <div class="col-md-6 position-relative mb-2">
                                     <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required>
+                                    <input type="text" class="form-control" name="username" id="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required onblur="Validator.validateName(this)">
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 position-relative mb-2">
                                     <label class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" required readonly title="Email cannot be changed">
+                                    <input type="email" class="form-control" name="email" id="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" required readonly title="Email cannot be changed" onblur="Validator.validateEmail(this)">
                                 </div>
                             </div>
                             
                             <div class="row mb-4">
-                                <div class="col-md-6">
+                                <div class="col-md-6 position-relative mb-2">
                                     <label class="form-label">Phone Number</label>
-                                    <input type="text" class="form-control" name="phone"
-value="<?php echo htmlspecialchars(isset($user_data['phone']) ? $user_data['phone'] : ''); ?>">
+                                    <input type="text" class="form-control" name="phone" id="phone"
+value="<?php echo htmlspecialchars(isset($user_data['phone']) ? $user_data['phone'] : ''); ?>" onblur="Validator.validatePhone(this)" required>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 position-relative mb-2">
                                     <label class="form-label">Profile Image (Optional)</label>
-                                    <input type="file" class="form-control" name="profile_image" accept="image/*">
+                                    <input type="file" class="form-control" name="profile_image" id="profile_image" accept="image/*" onchange="Validator.validateImageUpload(this)">
                                 </div>
                             </div>
                             
@@ -516,5 +516,20 @@ value="<?php echo htmlspecialchars(isset($user_data['phone']) ? $user_data['phon
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/validation.js"></script>
+    <script>
+        function validateProfileForm() {
+            let isValid = true;
+            isValid = Validator.validateName(document.getElementById('username')) && isValid;
+            isValid = Validator.validatePhone(document.getElementById('phone')) && isValid;
+            
+            const imageInput = document.getElementById('profile_image');
+            if(imageInput.files.length > 0) {
+                isValid = Validator.validateImageUpload(imageInput) && isValid;
+            }
+            
+            return isValid;
+        }
+    </script>
 </body>
 </html>
