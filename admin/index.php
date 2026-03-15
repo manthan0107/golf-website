@@ -35,7 +35,7 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
 
 <head>
     <meta charset="utf-8">
-    <title>DarkPan - Bootstrap 5 Admin Template</title>
+    <title>G-Club - Bootstrap 5 Admin Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -187,8 +187,8 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                     <td><input class="form-check-input" type="checkbox"></td>
                                     <td>01 Jan 2045</td>
                                     <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
+                                    <td>Srimant Padhi</td>
+                                    <td>₹123</td>
                                     <td>Paid</td>
                                     <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
                                 </tr>
@@ -196,8 +196,8 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                     <td><input class="form-check-input" type="checkbox"></td>
                                     <td>01 Jan 2045</td>
                                     <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
+                                    <td>Aayush Shukla</td>
+                                    <td>₹123</td>
                                     <td>Paid</td>
                                     <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
                                 </tr>
@@ -205,8 +205,8 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                     <td><input class="form-check-input" type="checkbox"></td>
                                     <td>01 Jan 2045</td>
                                     <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
+                                    <td>Manthan Munjani</td>
+                                    <td>₹123</td>
                                     <td>Paid</td>
                                     <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
                                 </tr>
@@ -214,8 +214,8 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                     <td><input class="form-check-input" type="checkbox"></td>
                                     <td>01 Jan 2045</td>
                                     <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
+                                    <td>Rushil Patel</td>
+                                    <td>₹123</td>
                                     <td>Paid</td>
                                     <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
                                 </tr>
@@ -223,8 +223,8 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                     <td><input class="form-check-input" type="checkbox"></td>
                                     <td>01 Jan 2045</td>
                                     <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
+                                    <td>Meet Munjani</td>
+                                    <td>₹123</td>
                                     <td>Paid</td>
                                     <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
                                 </tr>
@@ -249,7 +249,7 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                 <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                 <div class="w-100 ms-3">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
+                                        <h6 class="mb-0">Srimant Padhi</h6>
                                         <small>15 minutes ago</small>
                                     </div>
                                     <span>Short message goes here...</span>
@@ -259,7 +259,7 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                 <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                 <div class="w-100 ms-3">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
+                                        <h6 class="mb-0">Aayush Shukla</h6>
                                         <small>15 minutes ago</small>
                                     </div>
                                     <span>Short message goes here...</span>
@@ -269,7 +269,7 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                 <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                 <div class="w-100 ms-3">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
+                                        <h6 class="mb-0">Manthan Munjani</h6>
                                         <small>15 minutes ago</small>
                                     </div>
                                     <span>Short message goes here...</span>
@@ -279,7 +279,7 @@ $register_count = isset($row3['total']) ? $row3['total'] : 0;
                                 <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                 <div class="w-100 ms-3">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-0">Jhon Doe</h6>
+                                        <h6 class="mb-0">Rushil Patel</h6>
                                         <small>15 minutes ago</small>
                                     </div>
                                     <span>Short message goes here...</span>

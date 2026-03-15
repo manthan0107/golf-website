@@ -1,4 +1,4 @@
-  =>  Template Name    : DarkPan - Bootstrap 5 Admin Template
+  =>  Template Name    : G-Club - Bootstrap 5 Admin Template
 
   =>  Template Link    : https://htmlcodex.com/bootstrap-5-admin-template
 

@@ -48,7 +48,7 @@ $admin_image = !empty($admin['image']) ? "img/uploads/" . $admin['image'] : "img
 
 <head>
     <meta charset="utf-8">
-    <title>DarkPan - Admin Profile</title>
+    <title>G-Club - Admin Profile</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     
     <!-- Favicon -->

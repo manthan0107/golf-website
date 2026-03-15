@@ -414,7 +414,7 @@
           <div class="card pricing-card h-100">
             <div class="card-header text-center border-0 bg-white">
               <h6 class="plan-title">Silver Plan</h6>
-              <h3 class="price">$299<span class="price-duration">/month</span></h3>
+              <h3 class="price">₹2999<span class="price-duration">/month</span></h3>
               <div class="price-icon">
                 <img src="../image/plan-icon-01.png" alt="Silver Plan Icon" class="img-fluid p-3">
               </div>
@@ -435,7 +435,7 @@
           <div class="card pricing-card h-100">
             <div class="card-header text-center border-0 bg-white ">
               <h6 class="plan-title">Gold Plan</h6>
-              <h3 class="price">$499<span class="price-duration">/month</span></h3>
+              <h3 class="price">₹4999<span class="price-duration">/month</span></h3>
               <div class="price-icon">
                 <img src="../image/plan-icon-02.png" alt="Gold Plan Icon" class="img-fluid p-3">
               </div>
@@ -456,7 +456,7 @@
           <div class="card pricing-card h-100">
             <div class="card-header text-center border-0 bg-white">
               <h6 class="plan-title">Royal Plan</h6>
-              <h3 class="price">$699<span class="price-duration">/month</span></h3>
+              <h3 class="price">₹6999<span class="price-duration">/month</span></h3>
               <div class="price-icon">
                 <img src="../image/plan-icon-03.png" alt="Royal Plan Icon" class="img-fluid p-3">
               </div>
